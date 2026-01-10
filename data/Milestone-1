@@ -1,0 +1,7 @@
+Data Description
+Predicting the Habitability of Exoplanets Using Machine Learning
+The dataset used in this project is obtained from the NASA Exoplanet Archive, maintained by NASA. It contains verified observational data collected from space missions such as Kepler and TESS.
+The dataset provides structured information about exoplanets and their host stars, where each record represents one exoplanet. For this project, the Planetary Systems Composite Table is used, as it offers the most complete and cleaned version of confirmed exoplanet data suitable for machine learning analysis.
+The selected attributes include planetary features such as planet radius, mass, orbital period, distance from the host star, and equilibrium temperature, along with stellar features like host star temperature, radius, and mass. These parameters are crucial for determining whether a planet lies in the habitable zone and can potentially support liquid water.
+Since the dataset does not directly provide a habitability label, a binary target variable is derived using scientifically accepted criteria based on planetary size and temperature. The dataset is available in CSV format and contains real observational data with some missing values, which are handled during preprocessing.
+Overall, the NASA Exoplanet Archive dataset is reliable, well-documented, and appropriate for predicting exoplanet habitability using machine learning techniques.
