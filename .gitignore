@@ -1,0 +1,57 @@
+# ===============================
+# Python / Virtual Environment
+# ===============================
+venv/
+.env/
+.env.*
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.Python
+
+# ===============================
+# Jupyter / Notebooks
+# ===============================
+.ipynb_checkpoints/
+.notebooks/
+*.ipynb~
+
+# ===============================
+# ML / Model Artifacts
+# ===============================
+models/
+*.pkl
+*.joblib
+*.h5
+*.pt
+*.onnx
+
+# ===============================
+# Logs & Runtime Files
+# ===============================
+*.log
+logs/
+*.tmp
+*.temp
+
+# ===============================
+# OS / Editor Files
+# ===============================
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*.bak
+*.orig
+
+# ===============================
+# Build / Deployment
+# ===============================
+build/
+dist/
+*.egg-info/
+.cache/
