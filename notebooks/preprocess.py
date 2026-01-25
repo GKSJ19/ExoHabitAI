@@ -10,18 +10,19 @@ df = pd.read_csv(
     engine="python",
     on_bad_lines="skip"
 )
-# print(df.shape)   #Here, columns->289
+print("Initial Dataset Dimension: ",df.shape)   
 
 #------------checking missing values---------------
-# print(df.isnull().sum())
+print("Missing Values in each column: ")
+print(df.isnull().sum())
 
 #--------------Visualize missing values (Heatmap)------------
-sns.heatmap(df.isnull(), cbar=False)
-plt.show() # Black lines show the presence of values where as beige lines show missing values
 
+sns.heatmap(df.isnull(), cbar=False)
+# plt.show()
 
 #----------------------- Checking duplicates
-# print(df.duplicated().sum())-> No duplicates found, hence output is 0
+print("Number of duplicate rows: ",df.duplicated().sum())
 
 # Removing the unnecessary columns columns: 289->12
 df = df[
@@ -40,9 +41,8 @@ df = df[
         "st_spectype"
     ]
 ]
-# print(df.shape)   #Now, columns->12
-
-
+print("Dataset Dimension:",df.shape)   
+print()
 
 #---------------------Renaming columns----------------
 df.columns = [
@@ -59,7 +59,8 @@ df.columns = [
     "Star metallicity",
     "Star type"
 ]
-# print(df.head())
+print("First 5 rows of the data: \n", df.head())
+print()
 
 #-------------------Data Quality Assessment-----------------
 # Remove completely empty rows
@@ -94,7 +95,7 @@ df = df[
 
 #Categorical Encoding: One-hot encoding for star type
 # Reduce star type to main spectral class (G, K, M, F, A, etc.)
-df["Star type"] = df["Star type"].astype(str).str[0]
+"""df["Star type"] = df["Star type"].astype(str).str[0]
 
 # One-hot encode the reduced star type
 df = pd.get_dummies(
@@ -104,8 +105,7 @@ df = pd.get_dummies(
     drop_first=True
 )
 
-# print(df.head())
-# print(df.shape)
+print("Dimension of the dataset after one-hot encoding:", df.shape)""" 
 
 #--------------Feature Engineering:--------------
 # 1.Habitability Score
@@ -114,11 +114,12 @@ df["habitability_score"] = (
     (1 / abs(df["Planet radius"] - 1)) +
     (1 / df["Semi-major axis"])
 )
+print("Habitability Score calculated: ", df["habitability_score"].head())
 
 # Orbital Stability Factor
 df["orbital_stability"] = df["Orbital period"] / df["Semi-major axis"]
 
-
+print("Orbital Stability Factor calculated: ", df["orbital_stability"].head())
 
 #------- Feature Scaling: Standardization-----------
 import numpy as np
@@ -137,7 +138,8 @@ df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].median())
 scaler = StandardScaler()
 df[numeric_cols] = scaler.fit_transform(df[numeric_cols])
 
+print("First 5 rows of the cleaned data: \n", df.head())
 
 #Saving the cleaned dataset
 df.to_csv("preprocessed.csv", index=False)
-
+print("Preprocessed dataset saved as preprocessed.csv")
