@@ -17,17 +17,6 @@ __pycache__/
 .ipynb_checkpoints/
 .notebooks/
 *.ipynb~
-
-# ===============================
-# ML / Model Artifacts
-# ===============================
-models/
-*.pkl
-*.joblib
-*.h5
-*.pt
-*.onnx
-
 # ===============================
 # Logs & Runtime Files
 # ===============================
