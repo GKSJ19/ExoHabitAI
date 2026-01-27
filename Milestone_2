@@ -1,0 +1,174 @@
+# ==========================================
+# ExoHabitAI : Data Preprocessing + ML Training
+# ==========================================
+
+import pandas as pd
+import numpy as np
+
+# -------------------------------
+# 1. LOAD DATA
+# -------------------------------
+# Replace with your actual dataset path
+df = pd.read_csv("raw_exoplanet.csv")
+
+# If using NASA Exoplanet Archive, uncomment this:
+"""
+df.rename(columns={
+    "pl_rade": "planet_radius",
+    "pl_masse": "planet_mass",
+    "pl_orbper": "orbital_period",
+    "pl_orbsmax": "semi_major_axis",
+    "pl_eqt": "equilibrium_temp",
+    "pl_dens": "planet_density",
+    "st_teff": "host_star_temp",
+    "st_lum": "star_luminosity",
+    "st_met": "star_metallicity",
+    "st_spectype": "star_type"
+}, inplace=True)
+"""
+
+expected_cols = [
+    "planet_radius", "planet_mass", "orbital_period",
+    "semi_major_axis", "equilibrium_temp", "planet_density",
+    "host_star_temp", "star_luminosity", "star_metallicity",
+    "star_type"
+]
+
+df = df[expected_cols]
+
+# -------------------------------
+# 2. DATA CLEANING
+# -------------------------------
+df.drop_duplicates(inplace=True)
+
+num_cols = [
+    "planet_radius", "planet_mass", "orbital_period",
+    "semi_major_axis", "equilibrium_temp", "planet_density",
+    "host_star_temp", "star_luminosity", "star_metallicity"
+]
+
+# Handle missing values
+for col in num_cols:
+    df[col].fillna(df[col].median(), inplace=True)
+
+df["star_type"].fillna(df["star_type"].mode()[0], inplace=True)
+
+# Remove physically impossible values
+df = df[df["planet_radius"] > 0]
+df = df[df["equilibrium_temp"] > 0]
+
+# -------------------------------
+# 3. OUTLIER REMOVAL (IQR)
+# -------------------------------
+Q1 = df[num_cols].quantile(0.25)
+Q3 = df[num_cols].quantile(0.75)
+IQR = Q3 - Q1
+
+df = df[~((df[num_cols] < (Q1 - 1.5 * IQR)) |
+          (df[num_cols] > (Q3 + 1.5 * IQR))).any(axis=1)]
+
+# -------------------------------
+# 4. FEATURE ENGINEERING
+# -------------------------------
+
+# Habitability Score Index
+df["habitability_score"] = (
+    (1 - abs(df["equilibrium_temp"] - 288) / 288) +
+    (1 - abs(df["planet_radius"] - 1)) +
+    (1 - abs(df["semi_major_axis"] - 1)) +
+    (1 - abs(df["star_luminosity"] - 1))
+) / 4
+
+# Stellar Compatibility Index
+df["stellar_compatibility"] = (
+    (1 - abs(df["host_star_temp"] - 5778) / 5778) +
+    (1 - abs(df["star_luminosity"] - 1))
+) / 2
+
+# Orbital Stability Factor
+df["orbital_stability"] = 1 / (1 + abs(df["orbital_period"] - 365))
+
+# -------------------------------
+# 5. TARGET VARIABLE
+# -------------------------------
+df["habitable"] = df["habitability_score"].apply(
+    lambda x: 1 if x >= 0.6 else 0
+)
+
+# -------------------------------
+# 6. ENCODING + SCALING
+# -------------------------------
+df = pd.get_dummies(df, columns=["star_type"], drop_first=True)
+
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+df[num_cols] = scaler.fit_transform(df[num_cols])
+
+# Save preprocessed data
+df.to_csv("preprocessed.csv", index=False)
+
+# -------------------------------
+# 7. TRAIN–TEST SPLIT
+# -------------------------------
+from sklearn.model_selection import train_test_split
+
+X = df.drop("habitable", axis=1)
+y = df["habitable"]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# -------------------------------
+# 8. BASELINE MODEL
+# -------------------------------
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report
+
+lr = LogisticRegression(max_iter=1000)
+lr.fit(X_train, y_train)
+
+print("\n--- Logistic Regression ---")
+print(classification_report(y_test, lr.predict(X_test)))
+
+# -------------------------------
+# 9. RANDOM FOREST
+# -------------------------------
+from sklearn.ensemble import RandomForestClassifier
+
+rf = RandomForestClassifier(
+    n_estimators=200,
+    max_depth=10,
+    random_state=42
+)
+
+rf.fit(X_train, y_train)
+
+print("\n--- Random Forest ---")
+print(classification_report(y_test, rf.predict(X_test)))
+
+# -------------------------------
+# 10. XGBOOST
+# -------------------------------
+from xgboost import XGBClassifier
+
+xgb = XGBClassifier(
+    n_estimators=200,
+    learning_rate=0.1,
+    max_depth=6,
+    eval_metric="logloss"
+)
+
+xgb.fit(X_train, y_train)
+
+print("\n--- XGBoost ---")
+print(classification_report(y_test, xgb.predict(X_test)))
+
+# -------------------------------
+# 11. SAVE MODELS
+# -------------------------------
+import joblib
+joblib.dump(rf, "random_forest.pkl")
+joblib.dump(xgb, "xgboost.pkl")
+
+print("\n✅ Pipeline completed successfully")
