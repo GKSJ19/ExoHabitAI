@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 print(" Module 2: Data Cleaning & Preprocessing started")
 
 import pandas as pd
@@ -42,4 +40,5 @@ pd.DataFrame(df_scaled, columns=FEATURES).to_csv(
 
 print(" ML-ready dataset saved to:", OUTPUT_PATH)
 print(" COMPLETED successfully!")
+
 
