@@ -1,5 +1,3 @@
-print(" Module 2: Data Cleaning & Preprocessing started")
-
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
@@ -40,5 +38,6 @@ pd.DataFrame(df_scaled, columns=FEATURES).to_csv(
 
 print(" ML-ready dataset saved to:", OUTPUT_PATH)
 print(" COMPLETED successfully!")
+
 
 
