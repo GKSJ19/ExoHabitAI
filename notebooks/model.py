@@ -1,48 +1,51 @@
-print(" Debug: model.py started")
-
 import os
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_squared_error, r2_score
 import joblib
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
-INPUT_PATH = "data/exoplanet_ml_ready.csv"
-MODEL_PATH = "models/habitability_model.pkl"
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Debug: current directory and data folder files
-print("Current working directory:", os.getcwd())
-print("Files in data folder:", os.listdir("data"))
+INPUT_PATH = os.path.join(BASE_DIR, "data", "processed", "exoplanet_ml_ready.csv")
+MODEL_DIR = os.path.join(BASE_DIR, "models")
+MODEL_PATH = os.path.join(MODEL_DIR, "habitability_model.pkl")
 
-print(" Loading ML-ready dataset...")
+print(" Debug: model.py started")
+print(" Project root directory:", BASE_DIR)
+print(" Loading ML-ready dataset from:", INPUT_PATH)
+
+
 df = pd.read_csv(INPUT_PATH)
 print(" Dataset loaded:", df.shape)
 
-# Automatically take the last column as target
-TARGET = df.columns[-1]
-print(f"Using '{TARGET}' as target column")
+TARGET = "habitable"
 
-X = df.drop(TARGET, axis=1)
+X = df.drop(columns=TARGET)
 y = df[TARGET]
 
-print(" Splitting data into train and test sets...")
+
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
+    X, y, test_size=0.2, random_state=42, stratify=y
 )
 
-print(" Training Random Forest Regressor...")
-model = RandomForestRegressor(n_estimators=100, random_state=42)
+model = RandomForestClassifier(
+    n_estimators=200,
+    max_depth=5,
+    class_weight="balanced",
+    random_state=42
+)
+
 model.fit(X_train, y_train)
+print(" Model training completed")
 
-print(" Evaluating model...")
+
 y_pred = model.predict(X_test)
-print("Mean Squared Error (MSE):", mean_squared_error(y_test, y_pred))
-print("R2 Score:", r2_score(y_test, y_pred))
+print(f" Accuracy: {accuracy_score(y_test, y_pred):.3f}")
+print(classification_report(y_test, y_pred))
+print(" Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
 
-# Ensure models folder exists
-os.makedirs("models", exist_ok=True)
-print(f"Saving trained model to {MODEL_PATH}...")
+
+os.makedirs(MODEL_DIR, exist_ok=True)
 joblib.dump(model, MODEL_PATH)
-
-print(" Module 3 COMPLETED successfully!")
-
+print(f" Model saved at: {MODEL_PATH}")
