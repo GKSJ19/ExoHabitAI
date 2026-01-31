@@ -1,13 +1,3 @@
-"""
-ExoHabitAI Flask Backend API
-Milestone 3: Week 5-6 - Module 5: Flask Backend API
-
-This Flask application provides REST APIs for:
-1. Exoplanet habitability prediction
-2. Habitability ranking retrieval
-3. System health monitoring
-"""
-
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib
@@ -56,82 +46,61 @@ def health_check():
 
 # ========== ENDPOINT 2: HABITABILITY PREDICTION ==========
 @app.route('/predict', methods=['POST'])
-def predict_habitability():
-    """
-    Main prediction endpoint
-    Accepts exoplanet features and returns habitability prediction
-    
-    Expected Input (JSON):
-    {
-        "pl_dens": -0.048,
-        "pl_bmasse": 1.96,
-        "pl_ratdor": -0.237,
-        ... (38 features total)
-    }
-    
-    Returns (JSON):
-    {
-        "status": "success",
-        "prediction_result": "Habitable" or "Non-Habitable",
-        "confidence_score": 0.9234,
-        "planet_id": "Kepler-22b",
-        "threshold_used": 0.0034
-    }
-    """
+def run_prediction():
     try:
-        # Validate model availability
+        # Step 1: Check model status
         if model is None:
             return jsonify({
-                "status": "error",
-                "message": "Model not loaded. Please contact system administrator."
+                "success": False,
+                "reason": "Prediction model is unavailable"
             }), 503
-        
-        # Parse and validate input
-        data = request.get_json()
-        if not data:
+
+        # Step 2: Read request body
+        payload = request.get_json(silent=True)
+        if payload is None:
             return jsonify({
-                "status": "error",
-                "message": "No input data provided. Please send JSON with exoplanet features."
+                "success": False,
+                "reason": "Request body must be valid JSON"
             }), 400
-        
-        # Validate required features
-        expected_features = get_feature_names()
-        validation_result = validate_input_features(data, expected_features)
-        
-        if not validation_result["valid"]:
+
+        # Step 3: Feature validation
+        required_cols = get_feature_names()
+        missing_cols = [f for f in required_cols if f not in payload]
+
+        if missing_cols:
             return jsonify({
-                "status": "error",
-                "message": "Invalid input features",
-                "details": validation_result["errors"]
+                "success": False,
+                "reason": "Missing required input features",
+                "missing_features": missing_cols
             }), 400
-        
-        # Preprocess input data
-        input_df = preprocess_input(data, expected_features)
-        
-        # Generate prediction
-        probability = model.predict_proba(input_df)[:, 1][0]
-        prediction = 1 if probability >= OPTIMAL_THRESHOLD else 0
-        
-        # Extract planet identifier
-        planet_id = data.get('pl_name', data.get('planet_id', 'Unknown'))
-        
-        # Prepare response
-        response = {
-            "status": "success",
-            "prediction_result": "Habitable" if prediction == 1 else "Non-Habitable",
-            "confidence_score": float(np.round(probability, 4)),
-            "threshold_used": OPTIMAL_THRESHOLD,
-            "planet_id": planet_id,
-            "timestamp": datetime.now().isoformat()
+
+        # Step 4: Convert input to model-ready format
+        processed_input = preprocess_input(payload, required_cols)
+
+        # Step 5: Predict probability
+        prob_score = float(model.predict_proba(processed_input)[0][1])
+        is_habitable = prob_score >= OPTIMAL_THRESHOLD
+
+        # Step 6: Identify planet
+        planet_name = payload.get("pl_name") or payload.get("planet_id") or "N/A"
+
+        # Step 7: Build response
+        result = {
+            "success": True,
+            "planet": planet_name,
+            "classification": "Habitable" if is_habitable else "Non-Habitable",
+            "confidence": round(prob_score, 4),
+            "decision_threshold": OPTIMAL_THRESHOLD,
+            "evaluated_at": datetime.utcnow().isoformat()
         }
-        
-        return jsonify(response), 200
-    
-    except Exception as e:
+
+        return jsonify(result), 200
+
+    except Exception as err:
         return jsonify({
-            "status": "error",
-            "message": "Internal server error during prediction",
-            "error_details": str(e)
+            "success": False,
+            "reason": "Prediction failed due to server error",
+            "debug_info": str(err)
         }), 500
 
 
@@ -203,87 +172,82 @@ def get_habitability_ranking():
 
 
 # ========== ENDPOINT 4: BATCH PREDICTION ==========
-@app.route('/predict/batch', methods=['POST'])
-def predict_batch():
-    """
-    Batch prediction endpoint for multiple exoplanets
-    
-    Expected Input (JSON):
-    {
-        "planets": [
-            {"pl_dens": -0.048, "pl_bmasse": 1.96, ...},
-            {"pl_dens": 0.123, "pl_bmasse": 2.45, ...}
-        ]
-    }
-    
-    Returns predictions for all planets
-    """
+@app.post("/predict/batch")
+def batch_prediction():
     try:
+        # 1. Ensure model is ready
         if model is None:
             return jsonify({
-                "status": "error",
-                "message": "Model not loaded"
+                "success": False,
+                "message": "ML model is not available"
             }), 503
-        
-        data = request.get_json()
-        if not data or 'planets' not in data:
+
+        # 2. Read request JSON
+        request_body = request.get_json(silent=True)
+        if not request_body or "planets" not in request_body:
             return jsonify({
-                "status": "error",
-                "message": "No planet data provided. Expected 'planets' array."
+                "success": False,
+                "message": "Input must contain a 'planets' list"
             }), 400
-        
-        planets = data['planets']
-        if not isinstance(planets, list):
+
+        planet_list = request_body["planets"]
+        if not isinstance(planet_list, list):
             return jsonify({
-                "status": "error",
-                "message": "'planets' must be an array"
+                "success": False,
+                "message": "'planets' should be an array of objects"
             }), 400
-        
-        expected_features = get_feature_names()
-        results = []
-        
-        for idx, planet_data in enumerate(planets):
+
+        required_features = get_feature_names()
+        batch_output = []
+
+        # 3. Process each planet separately
+        for i, planet in enumerate(planet_list):
+            planet_result = {"item": i}
+
             try:
-                validation_result = validate_input_features(planet_data, expected_features)
-                if not validation_result["valid"]:
-                    results.append({
-                        "index": idx,
-                        "status": "error",
-                        "message": "Invalid features",
-                        "errors": validation_result["errors"]
+                missing = [f for f in required_features if f not in planet]
+                if missing:
+                    planet_result.update({
+                        "success": False,
+                        "error": "Missing input features",
+                        "missing_features": missing
                     })
+                    batch_output.append(planet_result)
                     continue
-                
-                input_df = preprocess_input(planet_data, expected_features)
-                probability = model.predict_proba(input_df)[:, 1][0]
-                prediction = 1 if probability >= OPTIMAL_THRESHOLD else 0
-                
-                results.append({
-                    "index": idx,
-                    "status": "success",
-                    "prediction_result": "Habitable" if prediction == 1 else "Non-Habitable",
-                    "confidence_score": float(np.round(probability, 4)),
-                    "planet_id": planet_data.get('pl_name', f"Planet_{idx}")
+
+                prepared_data = preprocess_input(planet, required_features)
+                prob = float(model.predict_proba(prepared_data)[0][1])
+                label = "Habitable" if prob >= OPTIMAL_THRESHOLD else "Non-Habitable"
+
+                planet_result.update({
+                    "success": True,
+                    "planet_name": planet.get("pl_name", f"Planet_{i}"),
+                    "prediction": label,
+                    "confidence": round(prob, 4)
                 })
-            except Exception as e:
-                results.append({
-                    "index": idx,
-                    "status": "error",
-                    "message": str(e)
+
+            except Exception as item_error:
+                planet_result.update({
+                    "success": False,
+                    "error": "Prediction failed for this planet",
+                    "details": str(item_error)
                 })
-        
+
+            batch_output.append(planet_result)
+
+        # 4. Final response
         return jsonify({
-            "status": "success",
-            "total_processed": len(results),
-            "results": results,
-            "timestamp": datetime.now().isoformat()
+            "success": True,
+            "processed_count": len(batch_output),
+            "predictions": batch_output,
+            "generated_at": datetime.utcnow().isoformat()
         }), 200
-    
-    except Exception as e:
+
+    except Exception as err:
         return jsonify({
-            "status": "error",
-            "message": "Batch prediction error",
-            "error_details": str(e)
+            "success": False,
+            "message": "Batch prediction service error",
+            "debug_info": str(err)
         }), 500
 
 
