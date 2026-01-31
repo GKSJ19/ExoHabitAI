@@ -1,9 +1,9 @@
-from xgboost import XGBClassifier
-from sklearn.model_selection import GridSearchCV
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+
+from xgboost import XGBClassifier
+from sklearn.model_selection import GridSearchCV
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
@@ -12,6 +12,8 @@ from sklearn.pipeline import Pipeline
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import roc_curve, auc
+
 
 from sklearn.metrics import (
     accuracy_score,
@@ -21,24 +23,20 @@ from sklearn.metrics import (
     classification_report,
     confusion_matrix,
     roc_auc_score
-)
+)#to evaluate models
 
 import joblib
 
 # ---------------- Load Dataset ----------------
 
 from pathlib import Path
-
-# Project root directory
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Data path
 DATA_PATH = BASE_DIR / "data" / "processed" / "preprocessed.csv"
 
 df = pd.read_csv(DATA_PATH)
 
 
-# ---------------- TARGET VARIABLE (INSIDE TRAINING) ----------------
+# ---------------- Define Target Variable ----------------
 df["habitability_label"] = np.where(
     (df["Equilibrium temperature"] > -1) &
     (df["Equilibrium temperature"] < 1),
@@ -47,7 +45,13 @@ df["habitability_label"] = np.where(
 )
 
 # ---------------- Features & Target ----------------
-X = df.drop(columns=["habitability_label", "Planet name", "Host Name"])
+X = df.drop(columns=[
+    "habitability_label",
+    "Planet name",
+    "Host Name",
+    "Equilibrium temperature"
+])
+
 y = df["habitability_label"]
 
 # ---------------- Column Separation ----------------
@@ -119,6 +123,25 @@ def evaluate(model, name):
 
     return f1_score(y_test, y_pred)
 
+
+#---------------- ROC Curve Plotting ----------------
+def plot_roc_curve(model, model_name):
+    y_prob = model.predict_proba(X_test)[:, 1]
+
+    fpr, tpr, _ = roc_curve(y_test, y_prob)
+    roc_auc = auc(fpr, tpr)
+
+    plt.figure(figsize=(6, 5))
+    plt.plot(fpr, tpr, label=f"{model_name} (AUC = {roc_auc:.3f})")
+    plt.plot([0, 1], [0, 1], linestyle="--")
+    plt.xlabel("False Positive Rate")
+    plt.ylabel("True Positive Rate")
+    plt.title("ROC Curve")
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+
 # ---------------- Evaluate Base Models ----------------
 f1_log = evaluate(log_reg, "Logistic Regression")
 f1_rf = evaluate(rf_model, "Random Forest")
@@ -160,6 +183,9 @@ best_model_name, best_model, best_f1 = max(models, key=lambda x: x[2])
 
 print(f"\nBest Model Selected: {best_model_name} (F1 = {best_f1:.4f})")
 
+plot_roc_curve(best_model, best_model_name)
+
+
 # ---------------- Save Best Model ----------------
 MODEL_DIR = BASE_DIR / "models"
 MODEL_DIR.mkdir(exist_ok=True)
@@ -190,24 +216,38 @@ feature_names = (
     .get_feature_names_out()
 )
 
-importances = best_model.named_steps["model"].feature_importances_
+model_step = best_model.named_steps["model"]
 
-importance_df = pd.DataFrame({
-    "Feature": feature_names,
-    "Importance": importances
-}).sort_values(by="Importance", ascending=False)
+# Handle different model types safely
+if hasattr(model_step, "feature_importances_"):
+    importances = model_step.feature_importances_
 
-print("\nTop 10 Important Features:")
-print(importance_df.head(10))
+elif hasattr(model_step, "coef_"):
+    importances = np.abs(model_step.coef_[0])
 
-plt.figure(figsize=(8, 5))
-plt.barh(
-    importance_df["Feature"][:10][::-1],
-    importance_df["Importance"][:10][::-1]
-)
-plt.xlabel("Importance Score")
-plt.title("Top 10 Feature Importances")
-plt.tight_layout()
-plt.show()
+else:
+    print("Feature importance not available for this model.")
+    importances = None
+
+# Plot only if importances exist
+if importances is not None:
+    importance_df = pd.DataFrame({
+        "Feature": feature_names,
+        "Importance": importances
+    }).sort_values(by="Importance", ascending=False)
+
+    print("\nTop 10 Important Features:")
+    print(importance_df.head(10))
+
+    plt.figure(figsize=(8, 5))
+    plt.barh(
+        importance_df["Feature"][:10][::-1],
+        importance_df["Importance"][:10][::-1]
+    )
+    plt.xlabel("Importance Score")
+    plt.title("Top 10 Feature Importances")
+    plt.tight_layout()
+    plt.show()
+
 
 print("\nBest model saved as best_exohabit_model.pkl")
