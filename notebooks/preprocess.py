@@ -1,15 +1,21 @@
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 #--------Loading dataset-----------
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_PATH = BASE_DIR / "data" / "raw" / "dataset.csv"
+
 df = pd.read_csv(
-    "dataset.csv",
+    DATA_PATH,
     sep=",",
     comment="#",
     engine="python",
     on_bad_lines="skip"
 )
+
 print("Initial Dataset Dimension: ",df.shape)   
 
 #------------checking missing values---------------
@@ -27,8 +33,6 @@ print("Number of duplicate rows: ",df.duplicated().sum())
 # Removing the unnecessary columns columns: 289->12
 df = df[
     [
-        "pl_name",
-        "hostname",
         "pl_rade",
         "pl_bmasse",
         "pl_orbper",
@@ -46,8 +50,6 @@ print()
 
 #---------------------Renaming columns----------------
 df.columns = [
-    "Planet name",
-    "Host Name",
     "Planet radius",
     "Planet mass",
     "Orbital period",
@@ -123,20 +125,11 @@ print("Orbital Stability Factor calculated: ", df["orbital_stability"].head())
 
 #------- Feature Scaling: Standardization-----------
 import numpy as np
-from sklearn.preprocessing import StandardScaler
-
-# Select ONLY continuous numeric columns (exclude bools)
 numeric_cols = df.select_dtypes(include=["float64", "int64"]).columns
 
-# Replace infinities (from feature engineering) with NaN
 df[numeric_cols] = df[numeric_cols].replace([np.inf, -np.inf], np.nan)
-
-# Fill NaNs using median (safe for scientific data)
 df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].median())
 
-# Apply standard scaling
-scaler = StandardScaler()
-df[numeric_cols] = scaler.fit_transform(df[numeric_cols])
 
 print("First 5 rows of the cleaned data: \n", df.head())
 

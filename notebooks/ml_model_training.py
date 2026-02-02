@@ -45,12 +45,23 @@ df["habitability_label"] = np.where(
 )
 
 # ---------------- Features & Target ----------------
-X = df.drop(columns=[
-    "habitability_label",
-    "Planet name",
-    "Host Name",
-    "Equilibrium temperature"
-])
+FEATURE_COLUMNS = [
+    "Planet radius",
+    "Planet mass",
+    "Orbital period",
+    "Semi-major axis",
+    "Planet density",
+    "Host star temperature",
+    "Star luminosity",
+    "Star metallicity",
+    "habitability_score",
+    "orbital_stability",
+    "Star type"
+]
+
+X = df[FEATURE_COLUMNS]
+y = df["habitability_label"]
+
 
 y = df["habitability_label"]
 
