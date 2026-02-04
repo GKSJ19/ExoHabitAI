@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ExoHabitAI – Live Galaxy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Three.js -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- WebGL Canvas -->
+<canvas id="galaxy"></canvas>
+
+<!-- UI Overlay -->
+<div class="ui">
+    <div class="glass">
+        <h1>🌌 ExoHabitAI</h1>
+        <p>Live Galactic Habitability Prediction</p>
+
+        <form id="predictionForm">
+            <input type="number" id="pl_rade" placeholder="Planet Radius" required>
+            <input type="number" id="pl_masse" placeholder="Planet Mass" required>
+            <input type="number" id="pl_orbper" placeholder="Orbital Period" required>
+            <input type="number" id="st_teff" placeholder="Star Temperature" required>
+            <button type="submit">🚀 Predict</button>
+        </form>
+
+        <div id="result"></div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

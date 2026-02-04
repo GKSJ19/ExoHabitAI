@@ -1,0 +1,74 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    height: 100%;
+    font-family: 'Poppins', sans-serif;
+}
+
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+/* UI Overlay */
+.ui {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+}
+
+.glass {
+    pointer-events: all;
+    width: 320px;
+    padding: 28px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 0 60px rgba(0,0,0,0.6);
+    color: white;
+    text-align: center;
+}
+
+.glass h1 {
+    margin-bottom: 5px;
+}
+
+.glass p {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin-bottom: 18px;
+}
+
+.glass input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: transparent;
+    color: white;
+}
+
+.glass button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 30px;
+    border: none;
+    background: linear-gradient(135deg, #9d50ff, #5f2cff);
+    color: white;
+    cursor: pointer;
+}
+
+#result {
+    margin-top: 12px;
+    font-weight: 600;
+}
+
+
+
+
