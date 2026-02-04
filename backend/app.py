@@ -1,68 +1,65 @@
 from flask import Flask, request, jsonify
 import joblib
-import pandas as pd
 import os
-from utils import preprocess_input
+from utils import validate_input, preprocess_input
 app = Flask(__name__)
-# ---------------- PATHS ----------------
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-MODEL_PATH = os.path.join(BASE_DIR, "../models/habitability_model.pkl")
-RANKED_DATA_PATH = os.path.join(BASE_DIR, "../data/habitability_ranked.csv")
-# ---------------- LOAD MODEL ----------------
-try:
+MODEL_PATH = r"D:\Downloads\random_forest(1).pkl"
+# Load model at startup
+if os.path.exists(MODEL_PATH):
     model = joblib.load(MODEL_PATH)
     print("Model loaded successfully")
-except Exception as e:
-    print("Model loading failed:", e)
+    else:
     model = None
-# ---------------- HOME ROUTE ----------------
-@app.route("/", methods=["GET"])
+    print("Model file not found")
+@app.route("/")
 def home():
     return jsonify({
-        "message": "ExoHabitAI Backend is Running",
+        "message": "Exoplanet Habitability Prediction API is running",
         "status": "active"
     })
-# ---------------- PREDICT ROUTE ----------------
 @app.route("/predict", methods=["POST"])
 def predict():
-    if model is None:
-        return jsonify({"error": "Model not loaded"}), 500
+    if not request.is_json:
+        return jsonify({"error": "Request must be JSON"}), 400
     data = request.get_json()
-    if not data:
-        return jsonify({"error": "No JSON data received"}), 400
-    required_fields = ["Radius", "Mass", "EqTemp", "Insolation"]
-    for field in required_fields:
-        if field not in data:
-            return jsonify({"error": f"Missing field: {field}"}), 400
-    try:
-        features = preprocess_input(data)
-        prediction = model.predict(features)[0]
-        probability = model.predict_proba(features)[0][1]
-        return jsonify({
-            "prediction": "Habitable" if prediction == 1 else "Non-Habitable",
-            "confidence_score": round(float(probability), 4),
-            "status": "success"
-        })
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-# ---------------- RANK ROUTE ----------------
-@app.route("/rank", methods=["GET"])
+    valid, error = validate_input(data)
+
+    if not valid:
+        return jsonify({"error": error}), 400
+
+    X = preprocess_input(data)
+
+    prediction = int(model.predict(X)[0])
+    probability = float(model.predict_proba(X)[0][1])
+
+    return jsonify({
+        "habitability_class": prediction,
+        "habitability_label": "Potentially Habitable" if prediction == 1 else "Non-Habitable",
+        "confidence_score": round(probability, 4),
+        "status": "success"
+    })
+
+@app.route("/rank", methods=["POST"])
 def rank():
-    if not os.path.exists(RANKED_DATA_PATH):
-        return jsonify({"error": "Ranked data file not found"}), 404
-    try:
-        df = pd.read_csv(RANKED_DATA_PATH)
-        top_10 = df.head(10).to_dict(orient="records")
+    planets = request.get_json()
 
-        return jsonify({
-            "count": len(top_10),
-            "ranking": top_10,
-            "status": "success"
-        })
+    ranked = []
+    for planet in planets:
+        valid, error = validate_input(planet)
+        if not valid:
+            return jsonify({"error": error}), 400
 
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-# ---------------- RUN APP ----------------
+        X = preprocess_input(planet)
+        score = float(model.predict_proba(X)[0][1])
+        planet["habitability_score"] = score
+        ranked.append(planet)
+
+    ranked = sorted(ranked, key=lambda x: x["habitability_score"], reverse=True)
+
+    return jsonify({
+        "status": "success",
+        "ranked_exoplanets": ranked
+    })
+
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=True)
