@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import joblib
 import numpy as np
 from utils import validate_input
@@ -6,10 +7,13 @@ from utils import validate_input
 # Initialize Flask app
 app = Flask(__name__)
 
+# 🔴 IMPORTANT: Enable CORS
+CORS(app)
+
 # Load trained Random Forest model
 model = joblib.load("../models/random_forest.pkl")
 
-# 🔹 EXACT SAME 21 FEATURES USED DURING TRAINING (ORDER MATTERS)
+# EXACT 21 FEATURES USED DURING TRAINING (ORDER MATTERS)
 FEATURES = [
     "pl_rade", "pl_masse", "pl_orbper", "pl_orbsmax",
     "pl_eqt", "pl_insol", "pl_dens",
@@ -20,7 +24,9 @@ FEATURES = [
     "pl_ratror", "pl_imppar"
 ]
 
-# HOME ROUTE
+# -------------------------------
+# HOME ROUTE (TEST BACKEND)
+# -------------------------------
 @app.route("/", methods=["GET"])
 def home():
     return jsonify({
@@ -28,34 +34,45 @@ def home():
     })
 
 
+# -------------------------------
 # PREDICT ROUTE
+# -------------------------------
 @app.route("/predict", methods=["POST"])
 def predict():
-    data = request.get_json()
+    try:
+        data = request.get_json()
 
-    # Validate input
-    is_valid, error = validate_input(data, FEATURES)
-    if not is_valid:
+        # Validate input
+        is_valid, error = validate_input(data, FEATURES)
+        if not is_valid:
+            return jsonify({
+                "status": "error",
+                "message": error
+            }), 400
+
+        # Build feature vector in training order
+        feature_vector = [data[f] for f in FEATURES]
+        X = np.array([feature_vector])
+
+        # Model prediction
+        prediction = model.predict(X)[0]
+        probability = model.predict_proba(X)[0][1]
+
+        return jsonify({
+            "status": "success",
+            "prediction": int(prediction),
+            "habitability_score": round(float(probability), 3)
+        })
+
+    except Exception as e:
         return jsonify({
             "status": "error",
-            "message": error
-        }), 400
-
-    # Build feature vector in correct order
-    feature_vector = [data[f] for f in FEATURES]
-    X = np.array([feature_vector])
-
-    # Prediction
-    prediction = model.predict(X)[0]
-    probability = model.predict_proba(X)[0][1]
-
-    return jsonify({
-        "status": "success",
-        "prediction": int(prediction),
-        "habitability_score": round(float(probability), 3)
-    })
+            "message": str(e)
+        }), 500
 
 
-# RUN APP
+# -------------------------------
+# RUN SERVER
+# -------------------------------
 if __name__ == "__main__":
     app.run(debug=True)
