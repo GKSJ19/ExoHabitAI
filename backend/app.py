@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import joblib
 import sys
 from pathlib import Path
@@ -15,6 +16,16 @@ from backend.utils import (
 )
 
 app = Flask(__name__)
+
+# Enable CORS for all routes
+CORS(app, resources={
+    r"/*": {
+        "origins": ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002"],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type"]
+    }
+})
+
 app.config['JSON_SORT_KEYS'] = False
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
@@ -65,8 +76,12 @@ def examples():
         "examples": get_example_inputs()
     })
 
-@app.route('/predict', methods=['POST'])
+@app.route('/predict', methods=['POST', 'OPTIONS'])
 def predict():
+    # Handle preflight request
+    if request.method == 'OPTIONS':
+        return '', 204
+    
     if model is None:
         return jsonify({"error": "Model not loaded"}), 500
     
@@ -194,4 +209,12 @@ def internal_error(error):
     return jsonify({"error": "Internal server error"}), 500
 
 if __name__ == '__main__':
+    print("\n" + "="*60)
+    print("🚀 ExoHabitAI Backend Server Starting...")
+    print("="*60)
+    print(f"📍 Server: http://localhost:5000")
+    print(f"🔍 Health Check: http://localhost:5000/health")
+    print(f"📚 API Docs: http://localhost:5000/")
+    print("="*60 + "\n")
+    
     app.run(host='0.0.0.0', port=5000, debug=True)

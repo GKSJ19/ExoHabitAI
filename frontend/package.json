@@ -1,0 +1,36 @@
+{
+  "name": "exohabit-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "remotion:preview": "remotion preview remotion/index.ts",
+    "remotion:render:input": "remotion render remotion/index.ts InputBackground public/backgrounds/input-bg.mp4 --codec h264",
+    "remotion:render:results": "remotion render remotion/index.ts ResultsBackground public/backgrounds/results-bg.mp4 --codec h264",
+    "remotion:render:all": "npm run remotion:render:input && npm run remotion:render:results"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.418",
+    "clsx": "^2.1.0",
+    "framer-motion": "^11.0.0",
+    "lucide-react": "^0.263.1",
+    "next": "15.1.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "remotion": "^4.0.418",
+    "tailwind-merge": "^2.2.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.18",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}
