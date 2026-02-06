@@ -1,0 +1,29 @@
+body {
+    background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+    color: white;
+    font-family: "Segoe UI", sans-serif;
+}
+
+.title {
+    font-size: 2.8rem;
+    font-weight: bold;
+}
+
+.subtitle {
+    color: #d1d1d1;
+}
+
+.card {
+    background-color: #ffffff;
+    color: #000;
+    border-radius: 15px;
+}
+
+#resultCard {
+    background-color: #e9f5ff;
+}
+
+.btn-primary {
+    padding: 12px 30px;
+    font-size: 18px;
+}
