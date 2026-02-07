@@ -1,0 +1,26 @@
+﻿{
+  "planets": [
+    {
+      "pl_name": "Earth-Twin-Alpha",
+      "pl_dens": 5.51, "pl_bmasse": 1.0, "pl_ratdor": 215.0, "st_logg": 4.44, "st_dens": 1.41,
+      "pl_rvamp": 0.089, "st_lum": 1.0, "sy_bmag": 5.48, "pl_ratror": 0.0091, "pl_orbincl": 89.0,
+      "st_met": 0.0, "st_mass": 1.0, "pl_trandep": 0.008, "st_rad": 1.0, "pl_orbper": 365.25,
+      "dec": -0.44, "pl_imppar": 0.1, "glat": -6.0, "pl_trandur": 13.0, "pl_tranmid": 2450000.0,
+      "sy_pmra": 0.0, "sy_w4mag": 8.0, "st_age": 4.6, "sy_pm": 0.0, "rowid": 1, "pl_orbsmax": 1.0,
+      "sy_pmdec": 0.0, "glon": 0.0, "ra": 0.0, "elon": 0.0, "rv_flag": 1, "st_teff": 5778.0,
+      "pl_nnotes": 0, "sy_plx": 100.0, "pl_ntranspec": 0, "pl_orblper": 0.0, "tran_flag": 1,
+      "pl_insol.1": 1.0, "pl_orbeccen.1": 0.017
+    },
+    {
+      "pl_name": "Hot-Jupiter",
+      "pl_dens": -1.5, "pl_bmasse": 8.5, "pl_ratdor": 2.8, "st_logg": -0.5, "st_dens": -2.1,
+      "pl_rvamp": 5.2, "st_lum": 3.8, "sy_bmag": -1.2, "pl_ratror": 3.5, "pl_orbincl": 0.8,
+      "st_met": -0.8, "st_mass": 2.5, "pl_trandep": 4.2, "st_rad": 3.1, "pl_orbper": 1.9,
+      "dec": -0.3, "pl_imppar": 2.1, "glat": -0.5, "pl_trandur": 2.5, "pl_tranmid": 1.2,
+      "sy_pmra": 0.4, "sy_w4mag": -0.9, "st_age": 0.2, "sy_pm": 0.6, "rowid": -0.8,
+      "pl_orbsmax": 1.8, "sy_pmdec": 0.3, "glon": -0.4, "ra": 0.1, "elon": -0.2,
+      "rv_flag": 0.508, "st_teff": 4.5, "pl_nnotes": 1.5, "sy_plx": -1.8, "pl_ntranspec": 0.9,
+      "pl_orblper": 1.1, "tran_flag": 0.508, "pl_insol.1": 6.5, "pl_orbeccen.1": -0.3
+    }
+  ]
+}
