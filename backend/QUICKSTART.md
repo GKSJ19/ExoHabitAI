@@ -1,6 +1,87 @@
-# ExoHabitAI Backend - Quick Start Guide
+# ExoHabitAI Backend API — Refined Documentation
 
-## 🚀 Getting Started in 3 Steps
+## 1. Objective
+
+Expose the Hybrid Stacking Ensemble (Milestone 2) through a secure, scalable REST API so users can query habitability without direct access to Python artifacts.
+
+## 2. Model & Decision Logic
+
+### 2.1 Intelligence Engine
+
+- **Ensemble Type:** Stacking Classifier
+- **Base Models:** XGBoost, Random Forest
+- **Meta Learner:** Logistic Regression
+- **Preprocessing:** Standard Scaler
+
+### 2.2 Discovery Threshold
+
+To preserve recall, the classifier uses a tuned threshold instead of $0.5$:
+
+- **Optimized Threshold:** $0.0763$
+- **Rule:** if $p \ge 0.0763$, classify as **Habitable**
+
+## 3. Architecture Overview
+
+- **Framework:** Flask
+- **Model Loading:** Joblib
+- **CORS:** Enabled for frontend integration
+- **Validation:** `utils.py` enforces required features and numeric types
+
+## 4. Endpoints Reference
+
+### 4.1 Health Check
+
+- **URL:** `/status`
+- **Method:** `GET`
+- **Purpose:** Service status and model readiness
+
+### 4.2 Single Prediction
+
+- **URL:** `/predict`
+- **Method:** `POST`
+- **Body:** JSON with all 39 features (plus optional `pl_name`)
+- **Response:** Prediction, confidence, threshold, timestamp
+
+### 4.3 Batch Prediction
+
+- **URL:** `/predict/batch`
+- **Method:** `POST`
+- **Body:** `{ "planets": [ {...}, {...} ] }`
+- **Response:** Per-planet results with indices and statuses
+
+### 4.4 Habitability Ranking
+
+- **URL:** `/rank`
+- **Method:** `GET`
+- **Query:**
+  - `top` (int, default 10)
+  - `min_score` (float, default 0.0)
+
+### 4.5 Model Info
+
+- **URL:** `/model/info`
+- **Method:** `GET`
+- **Purpose:** Model specs, features list, threshold
+
+### 4.6 Planet Details
+
+- **URL:** `/planet/<index>`
+- **Method:** `GET`
+- **Purpose:** Metadata and prediction info for a specific index
+
+## 5. Input Validation & Error Handling
+
+Validation ensures all 39 features are present and numeric.
+
+| Scenario | HTTP Code | Example Response |
+| --- | --- | --- |
+| Missing features | 400 | `{ "message": "Invalid input features", "details": [...] }` |
+| Non-numeric values | 400 | `{ "message": "Invalid input features", "details": [...] }` |
+| Empty payload | 400 | `{ "message": "No input data provided" }` |
+| Model not loaded | 503 | `{ "message": "Model not loaded" }` |
+| Unknown endpoint | 404 | `{ "message": "Endpoint not found" }` |
+
+## 6. Quick Start
 
 ### Step 1: Install Dependencies
 
@@ -9,172 +90,61 @@ cd backend
 pip install -r requirements.txt
 ```
 
-### Step 2: Start the Server
+### Step 2: Run the Server
 
 ```bash
 python app.py
 ```
 
-You should see:
-```
-============================================================
-ExoHabitAI Backend API - Starting Server
-============================================================
-Model Path: ..\models\exohabit_hybrid_stack.pkl
-✓ ExoHabitAI Model Loaded Successfully
-Detection Threshold: 0.0034
-============================================================
- * Running on http://0.0.0.0:5000
-```
-
-### Step 3: Test the API
-
-Open a new terminal and try:
+### Step 3: Verify
 
 ```bash
-# Test 1: Health Check
 curl http://localhost:5000/status
-
-# Test 2: Predict Habitability (using sample data)
-curl -X POST http://localhost:5000/predict ^
-  -H "Content-Type: application/json" ^
-  -d @sample_planet.json
-
-# Test 3: Get Top 10 Habitable Candidates
-curl http://localhost:5000/rank?top=10
 ```
 
----
+## 7. Example Requests
 
-## 📝 API Endpoints Summary
-
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/status` | GET | Health check |
-| `/predict` | POST | Single planet prediction |
-| `/predict/batch` | POST | Batch predictions |
-| `/rank` | GET | Get ranked planets |
-| `/model/info` | GET | Model specifications |
-
----
-
-## 🧪 Running Tests
-
-```bash
-# Run all tests
-pytest test_api.py -v
-
-# Run specific test
-pytest test_api.py::test_predict_endpoint_success -v
-```
-
----
-
-## 🌐 Sample Request (Python)
-
-```python
-import requests
-
-# Predict habitability
-url = "http://localhost:5000/predict"
-data = {
-    "pl_dens": -0.048,
-    "pl_bmasse": 1.96,
-    # ... (include all 38 features)
-    "pl_name": "Kepler-22b"
-}
-
-response = requests.post(url, json=data)
-print(response.json())
-```
-
----
-
-## 🔧 Troubleshooting
-
-### Issue: Model Not Found
-
-**Error**: `Model file not found!`
-
-**Solution**: 
-1. Check that `models/exohabit_hybrid_stack.pkl` exists
-2. Run the MLDP4 notebook to generate the model:
-   ```bash
-   cd notebooks
-   jupyter notebook MLDP4.ipynb
-   ```
-
-### Issue: Ranking Data Not Found
-
-**Error**: `Ranking data not found`
-
-**Solution**:
-1. Ensure `data/processed/habitability_ranked_Milestone2.csv` exists
-2. Run cell 2 in MLDP4.ipynb to generate the ranking file
-
-### Issue: Import Errors
-
-**Error**: `ModuleNotFoundError: No module named 'flask'`
-
-**Solution**:
-```bash
-pip install -r requirements.txt
-```
-
----
-
-## 📊 Expected Output Examples
-
-### Successful Prediction
+### Single Prediction
 
 ```json
 {
-  "status": "success",
-  "prediction_result": "Habitable",
-  "confidence_score": 0.9234,
-  "threshold_used": 0.0034,
-  "planet_id": "Kepler-452b",
-  "timestamp": "2026-01-28T10:35:00"
+  "pl_name": "Kepler-186f",
+  "pl_dens": 5.26,
+  "pl_orbper": 129.9,
+  "pl_insol.1": 0.41,
+  "st_mass": 0.54,
+  "st_rad": 0.52
 }
 ```
 
-### Ranking Response
+### Batch Prediction
 
 ```json
 {
-  "status": "success",
-  "total_planets": 1000,
-  "returned_count": 10,
   "planets": [
-    {
-      "rank": 1,
-      "habitability_score": 0.9876,
-      "classification": "Habitable"
-    }
+    { "pl_name": "Planet A", "pl_dens": 5.5, "pl_bmasse": 1.2, "pl_orbper": 20.5, "pl_insol.1": 0.7, "st_mass": 0.9, "st_rad": 0.8 },
+    { "pl_name": "Planet B", "pl_dens": 1.2, "pl_bmasse": 0.4, "pl_orbper": 6.1,  "pl_insol.1": 2.1, "st_mass": 1.1, "st_rad": 1.0 }
   ]
 }
 ```
 
----
+### Ranking Query
 
-## 🎯 Next Steps (Module 6)
+`/rank?top=5&min_score=0.9`
 
-After confirming the API works:
+## 8. Testing
 
-1. **Frontend Integration**: Connect React dashboard to these endpoints
-2. **Database Connection**: Implement dynamic data retrieval
-3. **Authentication**: Add JWT tokens for secured access
-4. **Deployment**: Deploy to cloud platform (Azure/AWS/Heroku)
+```bash
+pytest test_api.py -v
+```
 
----
+## 9. Data Dependencies
 
-## 📞 Support
+- Model: `../models/exohabit_hybrid_stack.pkl`
+- Ranking Data: `../data/processed/habitability_ranked_Milestone2.csv`
+- Metadata: `../data/processed/final-preprocessed6.csv`
 
-- Check `README.md` for detailed documentation
-- Review `MLDP4.ipynb` for model details
-- Contact your mentor for internship-specific questions
+## 10. Version
 
----
-
-**Version**: 1.0.0  
-**Last Updated**: January 28, 2026
+**Version:** 1.1.0  
+**Last Updated:** February 7, 2026

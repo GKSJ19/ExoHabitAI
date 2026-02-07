@@ -23,9 +23,10 @@ CORS(app)  # Enable CORS for frontend integration
 # ========== MODEL INITIALIZATION ==========
 MODEL_PATH = os.path.join('..', 'models', 'exohabit_hybrid_stack.pkl')
 RANKING_PATH = os.path.join('..', 'data', 'processed', 'habitability_ranked_Milestone2.csv')
+METADATA_PATH = os.path.join('..', 'data', 'processed', 'final-preprocessed6.csv')
 
-# Optimized threshold from MLDP4 notebook
-OPTIMAL_THRESHOLD = 0.0034
+# Optimized threshold from MLDP4 notebook (83.33% Recall, 38.46% Precision, 99% Accuracy)
+OPTIMAL_THRESHOLD = 0.0763
 
 try:
     model = joblib.load(MODEL_PATH)
@@ -35,6 +36,18 @@ try:
 except Exception as e:
     print(f"✗ Error loading model: {e}")
     model = None
+
+# Load metadata for planet details
+metadata_df = None
+try:
+    if os.path.exists(METADATA_PATH):
+        metadata_df = pd.read_csv(METADATA_PATH)
+        print(f"✓ Planet Metadata Loaded: {len(metadata_df)} planets")
+        print(f"  Metadata columns: {metadata_df.columns.tolist()}")
+    else:
+        print(f"⚠ Metadata file not found at {METADATA_PATH}")
+except Exception as e:
+    print(f"✗ Error loading metadata: {e}")
 
 # ========== ENDPOINT 1: HEALTH CHECK ==========
 @app.route('/status', methods=['GET'])
@@ -75,7 +88,7 @@ def predict_habitability():
         "prediction_result": "Habitable" or "Non-Habitable",
         "confidence_score": 0.9234,
         "planet_id": "Kepler-22b",
-        "threshold_used": 0.0034
+        "threshold_used": 0.0763
     }
     """
     try:
@@ -174,16 +187,52 @@ def get_habitability_ranking():
         filtered_df = ranking_df[ranking_df['habitability_score'] >= min_score]
         top_candidates = filtered_df.head(top_n)
         
-        # Convert to response format
+        # Convert to response format with metadata
         planets = []
         for idx, row in top_candidates.iterrows():
-            planets.append({
+            planet_data = {
                 "rank": idx + 1,
                 "habitability_score": float(row['habitability_score']),
                 "predicted_class": int(row['predicted_class']),
                 "actual_class": int(row['actual_class']),
                 "classification": "Habitable" if row['predicted_class'] == 1 else "Non-Habitable"
-            })
+            }
+            
+            # Add metadata if available by matching index
+            if metadata_df is not None and idx < len(metadata_df):
+                try:
+                    meta_row = metadata_df.iloc[idx]
+                    planet_data.update({
+                        "pl_name": str(meta_row.get('pl_name', f'Exoplanet-{idx+1}')),
+                        "hostname": str(meta_row.get('hostname', 'Unknown')),
+                        "st_spectype": str(meta_row.get('st_spectype', 'Unknown')),
+                        "discoverymethod": str(meta_row.get('discoverymethod', 'Unknown')),
+                        # Additional planetary parameters
+                        "pl_orbper": float(meta_row.get('pl_orbper', 0)) if pd.notna(meta_row.get('pl_orbper')) else None,
+                        "pl_orbsmax": float(meta_row.get('pl_orbsmax', 0)) if pd.notna(meta_row.get('pl_orbsmax')) else None,
+                        "pl_rade": float(meta_row.get('pl_rade', 0)) if pd.notna(meta_row.get('pl_rade')) else None,
+                        "pl_bmasse": float(meta_row.get('pl_bmasse', 0)) if pd.notna(meta_row.get('pl_bmasse')) else None,
+                        "pl_dens": float(meta_row.get('pl_dens', 0)) if pd.notna(meta_row.get('pl_dens')) else None,
+                        # Stellar parameters
+                        "st_teff": float(meta_row.get('st_teff', 0)) if pd.notna(meta_row.get('st_teff')) else None,
+                        "st_rad": float(meta_row.get('st_rad', 0)) if pd.notna(meta_row.get('st_rad')) else None,
+                        "st_mass": float(meta_row.get('st_mass', 0)) if pd.notna(meta_row.get('st_mass')) else None,
+                        "st_age": float(meta_row.get('st_age', 0)) if pd.notna(meta_row.get('st_age')) else None,
+                        # System parameters
+                        "sy_dist": float(meta_row.get('sy_dist', 0)) if pd.notna(meta_row.get('sy_dist')) else None,
+                    })
+                except Exception as e:
+                    print(f"Warning: Could not load metadata for planet at index {idx}: {e}")
+            else:
+                # Fallback names if metadata not available
+                planet_data.update({
+                    "pl_name": f"Exoplanet-{idx+1}",
+                    "hostname": "Unknown",
+                    "st_spectype": "Unknown",
+                    "discoverymethod": "Unknown"
+                })
+            
+            planets.append(planet_data)
         
         return jsonify({
             "status": "success",
@@ -324,13 +373,106 @@ def model_info():
         }), 500
 
 
+# ========== ENDPOINT 6: GET PLANET DETAILS ==========
+@app.route('/planet/<int:planet_index>', methods=['GET'])
+def get_planet_details(planet_index):
+    """
+    Get detailed information about a specific planet by index
+    
+    URL: /planet/<index>
+    Example: /planet/0 (first planet)
+    
+    Returns complete metadata and prediction information
+    """
+    try:
+        if metadata_df is None:
+            return jsonify({
+                "status": "error",
+                "message": "Metadata not available"
+            }), 503
+        
+        if planet_index < 0 or planet_index >= len(metadata_df):
+            return jsonify({
+                "status": "error",
+                "message": f"Invalid planet index. Valid range: 0-{len(metadata_df)-1}"
+            }), 400
+        
+        # Get planet data
+        planet = metadata_df.iloc[planet_index]
+        
+        # Get ranking data if available
+        ranking_info = {}
+        if os.path.exists(RANKING_PATH):
+            try:
+                ranking_df = pd.read_csv(RANKING_PATH)
+                if planet_index < len(ranking_df):
+                    rank_row = ranking_df.iloc[planet_index]
+                    ranking_info = {
+                        "habitability_score": float(rank_row['habitability_score']),
+                        "predicted_class": int(rank_row['predicted_class']),
+                        "actual_class": int(rank_row['actual_class']),
+                        "classification": "Habitable" if rank_row['predicted_class'] == 1 else "Non-Habitable"
+                    }
+            except Exception as e:
+                print(f"Could not load ranking info: {e}")
+        
+        # Build response with all available data
+        response = {
+            "status": "success",
+            "planet_index": planet_index,
+            # Core identification
+            "pl_name": str(planet.get('pl_name', f'Exoplanet-{planet_index+1}')),
+            "hostname": str(planet.get('hostname', 'Unknown')),
+            "st_spectype": str(planet.get('st_spectype', 'Unknown')),
+            "discoverymethod": str(planet.get('discoverymethod', 'Unknown')),
+            # Prediction info
+            **ranking_info,
+            # Planetary parameters
+            "planetary_params": {
+                "pl_orbper": float(planet['pl_orbper']) if pd.notna(planet.get('pl_orbper')) else None,
+                "pl_orbsmax": float(planet['pl_orbsmax']) if pd.notna(planet.get('pl_orbsmax')) else None,
+                "pl_rade": float(planet['pl_rade']) if pd.notna(planet.get('pl_rade')) else None,
+                "pl_bmasse": float(planet['pl_bmasse']) if pd.notna(planet.get('pl_bmasse')) else None,
+                "pl_dens": float(planet['pl_dens']) if pd.notna(planet.get('pl_dens')) else None,
+                "pl_orbeccen": float(planet['pl_orbeccen']) if pd.notna(planet.get('pl_orbeccen')) else None,
+                "pl_orbincl": float(planet['pl_orbincl']) if pd.notna(planet.get('pl_orbincl')) else None,
+                "pl_eqt": float(planet['pl_eqt']) if pd.notna(planet.get('pl_eqt')) else None,
+                "pl_insol": float(planet['pl_insol']) if pd.notna(planet.get('pl_insol')) else None,
+            },
+            # Stellar parameters
+            "stellar_params": {
+                "st_teff": float(planet['st_teff']) if pd.notna(planet.get('st_teff')) else None,
+                "st_rad": float(planet['st_rad']) if pd.notna(planet.get('st_rad')) else None,
+                "st_mass": float(planet['st_mass']) if pd.notna(planet.get('st_mass')) else None,
+                "st_age": float(planet['st_age']) if pd.notna(planet.get('st_age')) else None,
+                "st_met": float(planet['st_met']) if pd.notna(planet.get('st_met')) else None,
+                "st_logg": float(planet['st_logg']) if pd.notna(planet.get('st_logg')) else None,
+                "st_lum": float(planet['st_lum']) if pd.notna(planet.get('st_lum')) else None,
+            },
+            # System parameters
+            "system_params": {
+                "sy_dist": float(planet['sy_dist']) if pd.notna(planet.get('sy_dist')) else None,
+                "sy_plx": float(planet['sy_plx']) if pd.notna(planet.get('sy_plx')) else None,
+            }
+        }
+        
+        return jsonify(response), 200
+        
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "message": "Error retrieving planet details",
+            "error_details": str(e)
+        }), 500
+
+
 # ========== ERROR HANDLERS ==========
 @app.errorhandler(404)
 def not_found(error):
     return jsonify({
         "status": "error",
         "message": "Endpoint not found",
-        "available_endpoints": ["/status", "/predict", "/rank", "/predict/batch", "/model/info"]
+        "available_endpoints": ["/status", "/predict", "/rank", "/predict/batch", "/model/info", "/planet/<index>"]
     }), 404
 
 
@@ -357,6 +499,8 @@ if __name__ == '__main__':
     print("=" * 60)
     print(f"Model Path: {MODEL_PATH}")
     print(f"Ranking Data: {RANKING_PATH}")
+    print(f"Metadata Path: {METADATA_PATH}")
     print(f"Detection Threshold: {OPTIMAL_THRESHOLD}")
+    print(f"Planets with Metadata: {len(metadata_df) if metadata_df is not None else 0}")
     print("=" * 60)
     app.run(debug=True, host='0.0.0.0', port=5000)
