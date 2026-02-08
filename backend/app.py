@@ -20,10 +20,13 @@ from utils import validate_input_features, preprocess_input, get_feature_names
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend integration
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))   # backend/
+PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))  # ExoHabitAI/
+
 # ========== MODEL INITIALIZATION ==========
-MODEL_PATH = os.path.join('..', 'models', 'exohabit_hybrid_stack.pkl')
-RANKING_PATH = os.path.join('..', 'data', 'processed', 'habitability_ranked.csv')
-METADATA_PATH = os.path.join('..', 'data', 'processed', 'final-preprocessed6.csv')
+MODEL_PATH = os.path.join(PROJECT_ROOT, 'models', 'exohabit_hybrid_stack.pkl')
+RANKING_PATH = os.path.join(PROJECT_ROOT, 'data', 'processed', 'habitability_ranked.csv')
+METADATA_PATH = os.path.join(PROJECT_ROOT, 'data', 'processed', 'final-preprocessed6.csv')
 
 # Optimized threshold from MLDP4 notebook (83.33% Recall, 38.46% Precision, 99% Accuracy)
 OPTIMAL_THRESHOLD = 0.0763
