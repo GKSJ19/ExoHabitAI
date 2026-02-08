@@ -1,0 +1,14 @@
+/* Additional custom styles */
+
+.recharts-tooltip-wrapper {
+  z-index: 1000;
+}
+
+.recharts-legend-wrapper {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --background: 210 100% 2%;
+        --foreground: 210 20% 98%;
+        --card: 210 100% 4%;
+        --card-foreground: 210 20% 98%;
+        --popover: 210 100% 4%;
+        --popover-foreground: 210 20% 98%;
+        --primary: 199 89% 48%;
+        --primary-foreground: 210 20% 98%;
+        --secondary: 243 75% 59%;
+        --secondary-foreground: 210 20% 98%;
+        --muted: 215 25% 27%;
+        --muted-foreground: 215 20% 65%;
+        --accent: 326 78% 70%;
+        --accent-foreground: 210 20% 98%;
+        --destructive: 0 63% 31%;
+        --destructive-foreground: 210 20% 98%;
+        --border: 215 28% 17%;
+        --input: 215 28% 17%;
+        --ring: 199 89% 48%;
+        --chart-1: 199 89% 48%;
+        --chart-2: 243 75% 59%;
+        --chart-3: 270 75% 60%;
+        --chart-4: 326 78% 70%;
+        --chart-5: 350 80% 60%;
+        --radius: 0.75rem;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+    body {
+        @apply bg-background text-foreground;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background-color: #02040A;
+        background-image: url('https://images.unsplash.com/photo-1711560707076-d50fbf8a3a26?crop=entropy&cs=srgb&fm=jpg&q=85');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        position: relative;
+    }
+    
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(2, 4, 10, 0.92);
+        z-index: 0;
+    }
+    
+    #root {
+        position: relative;
+        z-index: 1;
+    }
+}
+
+.font-heading {
+    font-family: 'Orbitron', sans-serif;
+}
+
+.font-subheading {
+    font-family: 'Exo 2', sans-serif;
+}
+
+.font-body {
+    font-family: 'Inter', sans-serif;
+}
+
+.font-mono {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.glow-text {
+    text-shadow: 0 0 20px rgba(56, 189, 248, 0.5),
+                 0 0 40px rgba(56, 189, 248, 0.3);
+}
+
+.glass-card {
+    backdrop-filter: blur(24px);
+    background: rgba(11, 18, 33, 0.6);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+@layer base {
+    [data-debug-wrapper="true"] {
+        display: contents !important;
+    }
+
+    [data-debug-wrapper="true"] > * {
+        margin-left: inherit;
+        margin-right: inherit;
+        margin-top: inherit;
+        margin-bottom: inherit;
+        padding-left: inherit;
+        padding-right: inherit;
+        padding-top: inherit;
+        padding-bottom: inherit;
+        column-gap: inherit;
+        row-gap: inherit;
+        gap: inherit;
+        border-left-width: inherit;
+        border-right-width: inherit;
+        border-top-width: inherit;
+        border-bottom-width: inherit;
+        border-left-style: inherit;
+        border-right-style: inherit;
+        border-top-style: inherit;
+        border-bottom-style: inherit;
+        border-left-color: inherit;
+        border-right-color: inherit;
+        border-top-color: inherit;
+        border-bottom-color: inherit;
+    }
+}
