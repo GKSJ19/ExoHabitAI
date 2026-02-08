@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Exoplanet Habitability Prediction</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>🌍 Exoplanet Habitability Prediction System</h1>
+    <p class="subtitle">AI-based system to analyze exoplanets and predict their habitability.</p>
+
+    <div class="form-box">
+        <h2>🤖 Predict Exoplanet Habitability</h2>
+
+        <div class="inputs">
+            <input type="number" id="radius" placeholder="Planet Radius">
+            <input type="number" id="mass" placeholder="Planet Mass">
+            <input type="number" id="temperature" placeholder="Surface Temperature (K)">
+            <input type="number" id="distance" placeholder="Distance from Star (AU)">
+            <input type="number" id="flux" placeholder="Stellar Flux">
+        </div>
+
+        <button onclick="predictPlanet()">🚀 Predict</button>
+
+        <p id="result"></p>
+
+        <div class="progress">
+            <div id="progress-bar"></div>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
