@@ -50,7 +50,11 @@ Serialization: Joblib
 
 ## Project Status
 Phase 1 – Project Initialization Completed
+
 Phase 2 - Data PreProcessing and Model Training
+
 Phase 3 - Backend
+
 Phase 4 - Frontend
+
 Phase 5 - Deployment & Maintenance
