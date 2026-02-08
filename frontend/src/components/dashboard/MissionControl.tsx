@@ -1,4 +1,4 @@
-// src/components/dashboard/MissionControl.tsx (TRULY DARK POPUP)
+// src/components/dashboard/MissionControl.tsx (FINAL FIX - HIDE CANVAS)
 'use client';
 
 import { useState } from 'react';
@@ -97,7 +97,7 @@ export default function MissionControl() {
         </div>
       </aside>
 
-      {/* Main Canvas */}
+      {/* Main Canvas - HIDE when modal is open */}
       <main className="flex-1 relative">
         {isLoading ? (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -106,19 +106,27 @@ export default function MissionControl() {
             </div>
           </div>
         ) : data?.candidates && data.candidates.length > 0 ? (
-          <Scene camera={{ position: [0, 35, 0], fov: 60 }}>
-            <Environment />
-            <OrbitalRings 
-              planets={data.candidates} 
-              onPlanetClick={handlePlanetClick}
-            />
-            <CameraController 
-              enableOrbit 
-              autoRotate={false}
-              enableZoom
-              enablePan={false}
-            />
-          </Scene>
+          <div 
+            className="absolute inset-0"
+            style={{ 
+              visibility: showPredictionDetails ? 'hidden' : 'visible',
+              pointerEvents: showPredictionDetails ? 'none' : 'auto'
+            }}
+          >
+            <Scene camera={{ position: [0, 35, 0], fov: 60 }}>
+              <Environment />
+              <OrbitalRings 
+                planets={data.candidates} 
+                onPlanetClick={handlePlanetClick}
+              />
+              <CameraController 
+                enableOrbit 
+                autoRotate={false}
+                enableZoom
+                enablePan={false}
+              />
+            </Scene>
+          </div>
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
@@ -132,7 +140,7 @@ export default function MissionControl() {
           </div>
         )}
 
-        {/* Planet Prediction Details Modal - TRULY DARK */}
+        {/* Planet Prediction Details Modal */}
         <AnimatePresence>
           {showPredictionDetails && selectedPlanet && (
             <motion.div
@@ -142,26 +150,28 @@ export default function MissionControl() {
               className="fixed inset-0 z-[9999] flex items-center justify-center p-8"
               onClick={() => setShowPredictionDetails(false)}
               style={{
-                backgroundColor: 'rgba(0, 0, 0, 0.95)', // 95% black
-                backdropFilter: 'blur(12px)',
+                backgroundColor: '#000000',
               }}
             >
               <motion.div
                 initial={{ scale: 0.9, y: 20 }}
                 animate={{ scale: 1, y: 0 }}
                 exit={{ scale: 0.9, y: 20 }}
+                transition={{ duration: 0.3 }}
                 onClick={(e) => e.stopPropagation()}
                 className="relative max-w-2xl w-full"
               >
-                {/* Shadow layers for depth */}
-                <div className="absolute inset-0 bg-black/60 rounded-lg translate-y-3 translate-x-3 blur-xl" />
-                <div className="absolute inset-0 bg-black/40 rounded-lg translate-y-2 translate-x-2 blur-lg" />
+                {/* Shadow layers */}
+                <div 
+                  className="absolute inset-0 rounded-lg translate-y-3 translate-x-3 blur-xl"
+                  style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}
+                />
                 
-                {/* Main modal - completely opaque */}
+                {/* Main modal card */}
                 <div 
                   className="relative border-2 border-amber-600/40 rounded-lg p-8"
                   style={{
-                    backgroundColor: '#0f172a', // Solid slate-900
+                    backgroundColor: '#0a0e1a',
                   }}
                 >
                   {/* Corner decorations */}
@@ -210,7 +220,7 @@ export default function MissionControl() {
                   {/* Details grid */}
                   <div className="grid grid-cols-2 gap-4 mb-6">
                     <div 
-                      className="p-4 rounded border border-slate-800/50"
+                      className="p-4 rounded border border-slate-700/50"
                       style={{ backgroundColor: '#1e293b' }}
                     >
                       <div className="text-xs text-slate-500 uppercase tracking-wider font-mono mb-2">
@@ -221,7 +231,7 @@ export default function MissionControl() {
                       </div>
                     </div>
                     <div 
-                      className="p-4 rounded border border-slate-800/50"
+                      className="p-4 rounded border border-slate-700/50"
                       style={{ backgroundColor: '#1e293b' }}
                     >
                       <div className="text-xs text-slate-500 uppercase tracking-wider font-mono mb-2">
@@ -237,7 +247,8 @@ export default function MissionControl() {
                   <div className="text-center">
                     <button 
                       onClick={() => setShowPredictionDetails(false)}
-                      className="px-8 py-3 bg-slate-800 border border-slate-700 hover:border-amber-500/50 text-slate-300 hover:text-amber-400 transition-colors font-mono text-sm uppercase tracking-wider"
+                      className="px-8 py-3 border border-slate-700 hover:border-amber-500/50 text-slate-300 hover:text-amber-400 transition-colors font-mono text-sm uppercase tracking-wider"
+                      style={{ backgroundColor: '#1e293b' }}
                     >
                       Close
                     </button>
@@ -248,35 +259,39 @@ export default function MissionControl() {
           )}
         </AnimatePresence>
 
-        {/* Instructions */}
-        <div className="absolute top-8 right-8 text-right">
-          <div className="text-xs text-slate-600 uppercase tracking-wider font-mono space-y-1">
-            <div>Drag to rotate view</div>
-            <div>Scroll to zoom</div>
-            <div className="text-amber-600/60">Click planet for details</div>
+        {/* Instructions - HIDE when modal is open */}
+        {!showPredictionDetails && (
+          <div className="absolute top-8 right-8 text-right">
+            <div className="text-xs text-slate-600 uppercase tracking-wider font-mono space-y-1">
+              <div>Drag to rotate view</div>
+              <div>Scroll to zoom</div>
+              <div className="text-amber-600/60">Click planet for details</div>
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Orbital Legend */}
-        <div className="absolute bottom-8 right-8 bg-slate-900/80 border border-slate-700 p-4 rounded">
-          <div className="text-xs text-slate-400 uppercase tracking-wider font-mono mb-3">
-            Orbital Rings
+        {/* Orbital Legend - HIDE when modal is open */}
+        {!showPredictionDetails && (
+          <div className="absolute bottom-8 right-8 bg-slate-900/80 border border-slate-700 p-4 rounded">
+            <div className="text-xs text-slate-400 uppercase tracking-wider font-mono mb-3">
+              Orbital Rings
+            </div>
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                <span className="text-slate-500 font-mono">Inner: High Priority (≥70%)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-blue-500" />
+                <span className="text-slate-500 font-mono">Middle: Moderate (50-70%)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-amber-500" />
+                <span className="text-slate-500 font-mono">Outer: Low Priority (&lt;50%)</span>
+              </div>
+            </div>
           </div>
-          <div className="space-y-2 text-xs">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-emerald-500" />
-              <span className="text-slate-500 font-mono">Inner: High Priority (≥70%)</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-blue-500" />
-              <span className="text-slate-500 font-mono">Middle: Moderate (50-70%)</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-amber-500" />
-              <span className="text-slate-500 font-mono">Outer: Low Priority (&lt;50%)</span>
-            </div>
-          </div>
-        </div>
+        )}
       </main>
     </div>
   );
