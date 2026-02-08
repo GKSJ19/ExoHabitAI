@@ -1,0 +1,33 @@
+
+body {
+    background: radial-gradient(circle at center, #1a1a2e 0%, #16213e 40%, #000000 100%);
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.card {
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+}
+
+.form-control, .form-select {
+    background-color: #2c3e50;
+    border: 1px solid #455a64;
+    color: white;
+}
+
+.form-control:focus {
+    background-color: #34495e;
+    color: white;
+    border-color: #0dcaf0;
+    box-shadow: 0 0 10px rgba(13, 202, 240, 0.5);
+}
+
+.btn-info {
+    color: white;
+    transition: transform 0.2s;
+}
+
+.btn-info:hover {
+    transform: scale(1.02);
+}
