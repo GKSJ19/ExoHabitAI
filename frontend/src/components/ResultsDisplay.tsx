@@ -1,375 +1,271 @@
+// src/components/ResultsDisplay.tsx (WITH SUMMARY POPUP)
 'use client';
 
-import { useState, useRef, MouseEvent } from 'react';
-import { PredictionResponse } from '@/types';
-import OrbitalDiagram from './OrbitalDiagram';
-import FloatingParticles from './FloatingParticles';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Suspense } from 'react';
+import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import { PredictionResponse } from '../types';
+
+const Scene = dynamic(() => import('../components/three/Scene'), { ssr: false, loading: () => null });
+const Environment = dynamic(() => import('../components/three/Environment'), { ssr: false });
+const CameraController = dynamic(() => import('../components/three/CameraController'), { ssr: false });
+const ResultPlanetWrapper = dynamic(() => import('./ResultPlanetWrapper'), { ssr: false });
 
 interface ResultsDisplayProps {
   prediction: PredictionResponse;
   onReset: () => void;
+  compositionType?: 'rocky' | 'super_earth' | 'neptune' | 'jupiter';
 }
 
-export default function ResultsDisplay3D({ prediction, onReset }: ResultsDisplayProps) {
-  const { planet_name, habitability_prediction, confidence, recommendation } = prediction;
-  const { is_habitable, probability, category } = habitability_prediction;
+export default function ResultsDisplay({ prediction, onReset, compositionType = 'rocky' }: ResultsDisplayProps) {
+  const { habitability_prediction, confidence, recommendation, planet_name } = prediction;
+  const isHabitable = habitability_prediction.is_habitable;
+  const probability = habitability_prediction.probability * 100;
+  const [showSummary, setShowSummary] = useState(false);
 
-  const [scoreRotateX, setScoreRotateX] = useState(0);
-  const [scoreRotateY, setScoreRotateY] = useState(0);
-  const scoreRef = useRef<HTMLDivElement>(null);
+  const statusColor = isHabitable ? 'text-emerald-500' : 'text-slate-500';
 
-  const handleScoreMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-    if (!scoreRef.current) return;
-    
-    const rect = scoreRef.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    
-    const mouseX = e.clientX - centerX;
-    const mouseY = e.clientY - centerY;
-    
-    const rotateXValue = (mouseY / (rect.height / 2)) * -8;
-    const rotateYValue = (mouseX / (rect.width / 2)) * 8;
-    
-    setScoreRotateX(rotateXValue);
-    setScoreRotateY(rotateYValue);
-  };
-
-  const handleScoreMouseLeave = () => {
-    setScoreRotateX(0);
-    setScoreRotateY(0);
-  };
-
-  const getInterpretation = () => {
-    if (probability >= 0.7) {
-      return "This planet exhibits characteristics consistent with temperate conditions. Orbital parameters place it within the conservative habitable zone. Stellar metallicity and surface gravity suggest stable long-term conditions favorable for atmospheric retention.";
-    } else if (probability >= 0.4) {
-      return "This planet shows moderate potential for habitability. While some parameters fall within acceptable ranges, certain characteristics may limit long-term stability. Further observational data would refine this assessment.";
+  // Generate Executive Summary
+  const getExecutiveSummary = () => {
+    if (probability >= 70) {
+      return `${planet_name} exhibits high habitability probability (${probability.toFixed(1)}%). Model assessment indicates orbital parameters consistent with temperate zone placement. Stellar characteristics favor atmospheric stability. Confidence: ${confidence.level}. Recommended for priority spectroscopic follow-up observations.`;
+    } else if (probability >= 40) {
+      return `${planet_name} demonstrates moderate habitability potential (${probability.toFixed(1)}%). Certain planetary and stellar parameters fall within acceptable ranges, though limiting factors may constrain long-term habitability. Model confidence: ${confidence.level}. Additional observational data required for refined assessment.`;
     } else {
-      return "Current parameters suggest low probability of Earth-like habitability. Orbital configuration, stellar environment, or physical characteristics present significant challenges for temperate surface conditions.";
+      return `${planet_name} shows low habitability probability (${probability.toFixed(1)}%). Current parameterization suggests conditions incompatible with Earth-analog habitability criteria. Primary constraints include orbital configuration and/or stellar environment. Model confidence: ${confidence.level}.`;
     }
   };
 
+  // Generate Key Factors
   const getKeyFactors = () => {
     const factors = [];
     
-    if (probability >= 0.5) {
-      factors.push("Orbital period within temperate range");
-      factors.push("Planet mass consistent with rocky composition");
-      factors.push("Host star spectral type favorable");
-      factors.push("Moderate stellar metallicity");
-      factors.push("Semi-major axis: habitable zone overlap confirmed");
+    if (probability >= 50) {
+      factors.push({
+        factor: "Orbital Period",
+        assessment: "Within temperate range for host star luminosity",
+        impact: "Positive"
+      });
+      factors.push({
+        factor: "Planetary Mass",
+        assessment: "Consistent with rocky composition and atmospheric retention",
+        impact: "Positive"
+      });
+      factors.push({
+        factor: "Stellar Metallicity",
+        assessment: "Moderate metallicity suggests stable long-term conditions",
+        impact: "Positive"
+      });
+      factors.push({
+        factor: "Semi-major Axis",
+        assessment: "Habitable zone overlap confirmed via equilibrium temperature model",
+        impact: "Positive"
+      });
     } else {
-      factors.push("Orbital parameters outside optimal range");
-      factors.push("Physical characteristics may limit habitability");
-      factors.push("Stellar environment presents challenges");
-      factors.push("Further spectroscopic data needed");
+      factors.push({
+        factor: "Orbital Parameters",
+        assessment: "Configuration outside optimal temperate zone",
+        impact: "Negative"
+      });
+      factors.push({
+        factor: "Physical Characteristics",
+        assessment: "Mass and radius may limit atmospheric stability",
+        impact: "Negative"
+      });
+      factors.push({
+        factor: "Stellar Environment",
+        assessment: "Host star properties present challenges for surface habitability",
+        impact: "Negative"
+      });
+      factors.push({
+        factor: "Data Quality",
+        assessment: "Further spectroscopic observations needed to refine estimate",
+        impact: "Neutral"
+      });
     }
     
     return factors;
   };
 
   return (
-    <div className="min-h-screen relative z-10">
-      <FloatingParticles count={30} />
+    <div className="h-screen relative bg-[#050810]">
+      {/* 3D Background */}
+      <div className="fixed inset-0">
+        <Scene camera={{ position: [0, 0, 8], fov: 50 }}>
+          <Suspense fallback={null}>
+            <Environment />
+            <ResultPlanetWrapper isHabitable={isHabitable} compositionType={compositionType}/>
+            <CameraController enableOrbit autoRotate autoRotateSpeed={0.5} enableZoom={false} />
+          </Suspense>
+        </Scene>
+      </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        {/* Header with vintage styling */}
-        <header className="mb-12 text-center relative">
-          <div className="flex items-center justify-center mb-6">
-            <div className="h-px w-24 bg-amber-600/40" />
-            <div className="mx-4 w-2 h-2 border border-amber-600/40 rotate-45" />
-            <div className="h-px w-24 bg-amber-600/40" />
-          </div>
-
-          <div className="inline-block relative">
-            <h1 className="text-3xl font-light text-slate-100 mb-2 tracking-wider font-mono">
-              Analysis Complete
-            </h1>
-            <div className="absolute -top-2 -left-2 w-5 h-5 border-t-2 border-l-2 border-amber-600/40" />
-            <div className="absolute -top-2 -right-2 w-5 h-5 border-t-2 border-r-2 border-amber-600/40" />
-            <div className="absolute -bottom-2 -left-2 w-5 h-5 border-b-2 border-l-2 border-amber-600/40" />
-            <div className="absolute -bottom-2 -right-2 w-5 h-5 border-b-2 border-r-2 border-amber-600/40" />
-          </div>
-
-          <p className="text-xl text-amber-500/80 font-mono mt-4 tracking-wide">
-            {planet_name}
-          </p>
-
-          <div className="flex items-center justify-center mt-6">
-            <div className="h-px w-24 bg-amber-600/40" />
-            <div className="mx-4 w-2 h-2 border border-amber-600/40 rotate-45" />
-            <div className="h-px w-24 bg-amber-600/40" />
-          </div>
+      {/* Content Overlay */}
+      <div className="relative z-10 h-full flex flex-col">
+        <header className="p-8">
+          <Link href="/dashboard" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-300 transition-colors font-mono text-sm uppercase tracking-wider">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Mission Control
+          </Link>
         </header>
 
-        {/* Main Grid with 3D cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-          {/* Primary Score Card - 3D Interactive */}
-          <div className="lg:col-span-2 perspective-1000">
-            <div
-              ref={scoreRef}
-              onMouseMove={handleScoreMouseMove}
-              onMouseLeave={handleScoreMouseLeave}
-              className="relative"
-              style={{
-                transform: `rotateX(${scoreRotateX}deg) rotateY(${scoreRotateY}deg)`,
-                transformStyle: 'preserve-3d',
-                transition: 'transform 0.1s ease-out',
-              }}
-            >
-              {/* Depth layers */}
-              <div className="absolute inset-0 bg-slate-950/40 rounded-lg translate-y-2 translate-x-2 blur-lg" />
-              <div className="absolute inset-0 bg-slate-900/60 rounded-lg translate-y-1 translate-x-1 blur-sm" />
+        <div className="flex-1 flex items-center justify-center px-8">
+          <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.5 }} className="max-w-4xl w-full">
+            <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, delay: 1 }} className="text-center mb-12">
+              <div className="text-xs text-slate-600 uppercase tracking-[0.2em] mb-4 font-mono">Analysis Complete</div>
+              <h1 className="text-7xl font-light text-slate-100 mb-4 tracking-tight">{planet_name}</h1>
+              <div className={`text-5xl font-light ${statusColor} mb-6`}>{isHabitable ? 'Habitable' : 'Not Habitable'}</div>
+              <div className="text-6xl font-light text-slate-400 font-mono">{probability.toFixed(1)}%</div>
+            </motion.div>
+
+            <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 1.5 }} className="grid grid-cols-3 gap-6 mb-12">
+              <div className="bg-slate-900/50 border border-slate-800 p-6">
+                <div className="text-xs text-slate-600 uppercase tracking-[0.15em] mb-2 font-mono">Category</div>
+                <div className="text-lg text-slate-300">{habitability_prediction.category}</div>
+              </div>
+              <div className="bg-slate-900/50 border border-slate-800 p-6">
+                <div className="text-xs text-slate-600 uppercase tracking-[0.15em] mb-2 font-mono">Confidence</div>
+                <div className="text-lg text-slate-300">{confidence.level}</div>
+              </div>
+              <div className="bg-slate-900/50 border border-slate-800 p-6">
+                <div className="text-xs text-slate-600 uppercase tracking-[0.15em] mb-2 font-mono">Priority</div>
+                <div className="text-lg text-slate-300">{recommendation.priority_rank}</div>
+              </div>
+            </motion.div>
+
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 2 }} className="text-center mb-12">
+              <p className="text-slate-500 max-w-2xl mx-auto">{habitability_prediction.description}</p>
+            </motion.div>
+
+            {/* Actions */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 2.5 }} className="flex gap-4 justify-center">
+              <button onClick={onReset} className="px-8 py-4 bg-slate-900 border border-slate-700 hover:border-slate-600 text-slate-300 hover:text-slate-100 transition-colors font-mono text-sm uppercase tracking-wider">
+                New Analysis
+              </button>
               
-              {/* Main card */}
-              <div 
-                className="relative bg-slate-900/50 border-2 border-amber-600/30 rounded-lg p-10"
-                style={{
-                  boxShadow: `
-                    0 20px 25px -5px rgba(0, 0, 0, 0.4),
-                    0 10px 10px -5px rgba(0, 0, 0, 0.3),
-                    inset 0 2px 4px rgba(255, 255, 255, 0.05)
-                  `,
-                }}
-              >
+              <button onClick={() => setShowSummary(true)} className="px-8 py-4 bg-slate-900 border border-amber-700/50 hover:border-amber-500/70 text-amber-500 hover:text-amber-400 transition-colors font-mono text-sm uppercase tracking-wider">
+                View Summary
+              </button>
+
+              <Link href="/dashboard">
+                <button className="px-8 py-4 bg-slate-900 border border-slate-700 hover:border-slate-600 text-slate-300 hover:text-slate-100 transition-colors font-mono text-sm uppercase tracking-wider">
+                  Dashboard
+                </button>
+              </Link>
+            </motion.div>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Summary Popup Modal */}
+      <AnimatePresence>
+        {showSummary && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-8 z-50"
+            onClick={() => setShowSummary(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative max-w-3xl w-full max-h-[80vh] overflow-y-auto"
+            >
+              <div className="absolute inset-0 bg-slate-950/60 rounded-lg translate-y-2 translate-x-2 blur-lg" />
+              
+              <div className="relative bg-slate-900/95 border-2 border-amber-600/30 rounded-lg p-8">
                 {/* Corner decorations */}
                 <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-amber-500/50" />
                 <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-amber-500/50" />
                 <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-amber-500/50" />
                 <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-amber-500/50" />
 
-                <div className="text-center mb-8" style={{ transform: 'translateZ(20px)' }}>
-                  {/* Animated score */}
-                  <div className="relative inline-block">
-                    <div className="text-8xl font-light text-amber-500 mb-3 font-mono tracking-wider">
-                      {(probability * 100).toFixed(1)}
-                      <span className="text-5xl">%</span>
-                    </div>
-                    {/* Glow effect */}
-                    <div className="absolute inset-0 blur-2xl opacity-30 bg-amber-500" />
-                  </div>
+                {/* Close button */}
+                <button
+                  onClick={() => setShowSummary(false)}
+                  className="absolute top-4 right-4 text-slate-500 hover:text-slate-300 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
 
-                  <div className="text-xs uppercase tracking-widest text-slate-400 mb-4 font-mono">
-                    Habitability Score
+                {/* Header */}
+                <div className="text-center mb-8">
+                  <div className="text-xs uppercase tracking-widest text-slate-500 mb-3 font-mono">
+                    Scientific Summary
                   </div>
+                  <h2 className="text-3xl font-light text-amber-500 mb-2 font-mono">
+                    {planet_name}
+                  </h2>
+                </div>
 
-                  <div className={`
-                    text-2xl font-mono tracking-wide mb-6 px-6 py-2 inline-block rounded
-                    ${is_habitable 
-                      ? 'text-emerald-400 bg-emerald-950/30 border border-emerald-800/50' 
-                      : 'text-red-400 bg-red-950/30 border border-red-800/50'
-                    }
-                  `}>
-                    {is_habitable ? 'Potentially Habitable' : 'Not Habitable'}
+                {/* Executive Summary */}
+                <div className="mb-8">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="inline-block w-1 h-1 bg-amber-500 rounded-full" />
+                    <h3 className="text-xs uppercase tracking-widest text-amber-500/70 font-mono">
+                      Executive Summary
+                    </h3>
+                  </div>
+                  <p className="text-slate-300 leading-relaxed text-sm font-light">
+                    {getExecutiveSummary()}
+                  </p>
+                </div>
+
+                {/* Key Factors */}
+                <div className="mb-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="inline-block w-1 h-1 bg-amber-500 rounded-full" />
+                    <h3 className="text-xs uppercase tracking-widest text-amber-500/70 font-mono">
+                      Key Scientific Factors
+                    </h3>
+                  </div>
+                  <div className="space-y-3">
+                    {getKeyFactors().map((item, index) => (
+                      <div
+                        key={index}
+                        className="flex items-start gap-4 py-3 px-4 bg-slate-950/20 rounded border-l-2 border-slate-700/50"
+                      >
+                        <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${
+                          item.impact === 'Positive' ? 'bg-emerald-500' :
+                          item.impact === 'Negative' ? 'bg-red-500' :
+                          'bg-slate-500'
+                        }`} />
+                        <div className="flex-1">
+                          <div className="text-sm text-slate-300 font-mono mb-1">
+                            {item.factor}
+                          </div>
+                          <div className="text-xs text-slate-500 font-light">
+                            {item.assessment}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
-                {/* Metrics table with 3D effect */}
-                <div className="max-w-md mx-auto space-y-1 text-sm" style={{ transform: 'translateZ(10px)' }}>
-                  {[
-                    { label: 'Confidence', value: confidence.level },
-                    { label: 'Research Priority', value: recommendation.priority_rank },
-                    { label: 'Category', value: category },
-                  ].map((item, index) => (
-                    <div
-                      key={index}
-                      className={`
-                        flex justify-between py-3 px-4
-                        bg-slate-950/40 
-                        border border-slate-800/50
-                        rounded
-                        hover:bg-slate-950/60 hover:border-slate-700
-                        transition-all duration-300
-                      `}
-                      style={{
-                        boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.2)',
-                      }}
-                    >
-                      <span className="text-slate-400 font-mono">{item.label}</span>
-                      <span className="text-amber-500 font-mono font-semibold">{item.value}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Planet Context Card - 3D */}
-          <div className="perspective-1000">
-            <div className="relative transform-gpu hover:scale-[1.02] transition-transform duration-300">
-              {/* Depth layers */}
-              <div className="absolute inset-0 bg-slate-950/40 rounded-lg translate-y-2 translate-x-2 blur-lg" />
-              <div className="absolute inset-0 bg-slate-900/60 rounded-lg translate-y-1 translate-x-1 blur-sm" />
-              
-              {/* Main card */}
-              <div 
-                className="relative bg-slate-900/50 border border-amber-600/30 rounded-lg p-8"
-                style={{
-                  boxShadow: `
-                    0 10px 15px -3px rgba(0, 0, 0, 0.3),
-                    inset 0 2px 4px rgba(255, 255, 255, 0.05)
-                  `,
-                }}
-              >
-                {/* Corner decorations */}
-                <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-amber-500/40" />
-                <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-amber-500/40" />
-                <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-amber-500/40" />
-                <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-amber-500/40" />
-
-                <h3 className="text-xs uppercase tracking-widest text-amber-500/80 mb-6 font-mono flex items-center gap-2">
-                  <span className="inline-block w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse" />
-                  Planet Context
-                </h3>
-
-                <dl className="space-y-4 text-sm mb-8">
-                  {[
-                    { term: 'Host Star', value: 'G2V' },
-                    { term: 'Semi-major Axis', value: '1.02 AU' },
-                    { term: 'Discovery Year', value: '2024' },
-                  ].map((item, index) => (
-                    <div 
-                      key={index}
-                      className="flex justify-between py-2 px-3 bg-slate-950/30 rounded border-l-2 border-amber-600/40"
-                    >
-                      <dt className="text-slate-400 font-mono">{item.term}</dt>
-                      <dd className="text-slate-200 font-mono font-semibold">{item.value}</dd>
-                    </div>
-                  ))}
-                </dl>
-                
-                <OrbitalDiagram />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Interpretation Card */}
-        <div className="perspective-1000 mb-8">
-          <div className="relative transform-gpu hover:scale-[1.01] transition-transform duration-300">
-            <div className="absolute inset-0 bg-slate-950/40 rounded-lg translate-y-1 translate-x-1 blur-md" />
-            
-            <div 
-              className="relative bg-slate-900/40 border border-slate-800/50 rounded-lg p-8"
-              style={{ boxShadow: 'inset 0 2px 4px rgba(255, 255, 255, 0.03)' }}
-            >
-              <div className="absolute top-0 left-0 w-4 h-4 border-t border-l border-amber-600/30" />
-              <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-amber-600/30" />
-              
-              <h3 className="text-xs uppercase tracking-widest text-amber-500/70 mb-4 font-mono flex items-center gap-2">
-                <span className="inline-block w-1 h-1 bg-amber-500 rounded-full" />
-                Interpretation
-              </h3>
-              <p className="text-slate-300 leading-relaxed text-sm font-light">
-                {getInterpretation()}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Key Factors Card */}
-        <div className="perspective-1000 mb-12">
-          <div className="relative transform-gpu hover:scale-[1.01] transition-transform duration-300">
-            <div className="absolute inset-0 bg-slate-950/40 rounded-lg translate-y-1 translate-x-1 blur-md" />
-            
-            <div 
-              className="relative bg-slate-900/40 border border-slate-800/50 rounded-lg p-8"
-              style={{ boxShadow: 'inset 0 2px 4px rgba(255, 255, 255, 0.03)' }}
-            >
-              <div className="absolute top-0 left-0 w-4 h-4 border-t border-l border-amber-600/30" />
-              <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-amber-600/30" />
-              
-              <h3 className="text-xs uppercase tracking-widest text-amber-500/70 mb-4 font-mono flex items-center gap-2">
-                <span className="inline-block w-1 h-1 bg-amber-500 rounded-full" />
-                Key Factors Affecting Score
-              </h3>
-              <ul className="space-y-3 text-sm text-slate-300">
-                {getKeyFactors().map((factor, index) => (
-                  <li 
-                    key={index} 
-                    className="flex items-start gap-3 py-2 px-3 bg-slate-950/20 rounded border-l-2 border-slate-700/50 hover:border-amber-600/40 transition-colors"
+                {/* Close button at bottom */}
+                <div className="text-center pt-4 border-t border-slate-800/50">
+                  <button
+                    onClick={() => setShowSummary(false)}
+                    className="px-8 py-3 bg-slate-900 border border-slate-700 hover:border-amber-500/50 text-slate-300 hover:text-amber-400 transition-colors font-mono text-sm uppercase tracking-wider"
                   >
-                    <span className="text-amber-600/60 mt-1 font-mono text-xs">▸</span>
-                    <span className="font-light">{factor}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        {/* 3D Action Buttons */}
-        <div className="flex gap-6 justify-center">
-          {[
-            { label: 'Return to Configuration', onClick: onReset, primary: true },
-            { label: 'Export Report', onClick: () => window.print(), primary: false },
-          ].map((button, index) => (
-            <div key={index} className="relative perspective-1000">
-              <div className="absolute inset-0 bg-slate-950/40 rounded-lg translate-y-1 translate-x-1 blur-sm" />
-              
-              <button
-                onClick={button.onClick}
-                className={`
-                  relative px-8 py-3
-                  ${button.primary 
-                    ? 'bg-slate-900/80 border-2 border-amber-600/50 text-amber-500 hover:border-amber-500/70 hover:text-amber-400' 
-                    : 'bg-slate-950/60 border border-slate-700/50 text-slate-300 hover:bg-slate-900/60 hover:border-slate-600'
-                  }
-                  font-mono text-sm tracking-wide
-                  rounded-lg
-                  transition-all duration-300
-                  hover:shadow-lg
-                  active:translate-y-0.5
-                `}
-                style={{
-                  boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.2)',
-                }}
-              >
-                {/* Corner accents for primary button */}
-                {button.primary && (
-                  <>
-                    <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-amber-500/60" />
-                    <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-amber-500/60" />
-                    <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-amber-500/60" />
-                    <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-amber-500/60" />
-                  </>
-                )}
-                
-                {button.label}
-              </button>
-            </div>
-          ))}
-        </div>
-
-        {/* Vintage footer */}
-        <div className="mt-16 flex items-center justify-center opacity-40">
-          <div className="h-px w-32 bg-slate-600" />
-          <div className="mx-4 text-slate-600 text-xs font-mono">◊</div>
-          <div className="h-px w-32 bg-slate-600" />
-        </div>
-      </div>
-
-      <style jsx>{`
-        .perspective-1000 {
-          perspective: 1000px;
-        }
-
-        @keyframes float {
-          0%, 100% {
-            transform: translateY(0) translateX(0);
-            opacity: 0.2;
-          }
-          50% {
-            transform: translateY(-30px) translateX(15px);
-            opacity: 0.5;
-          }
-        }
-
-        .animate-float {
-          animation: float 15s ease-in-out infinite;
-        }
-      `}</style>
+                    Close
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
