@@ -31,18 +31,29 @@ import joblib
 
 from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_PATH = BASE_DIR / "data" / "processed" / "preprocessed.csv"
+PROCESSED_DIR = BASE_DIR / "data" / "processed"
 
-df = pd.read_csv(DATA_PATH)
+df_unscaled = pd.read_csv(PROCESSED_DIR / "cleaned_unscaled.csv")
+df_preprocessed = pd.read_csv(PROCESSED_DIR / "preprocessed.csv")
+
+
 
 
 # ---------------- Define Target Variable ----------------
-df["habitability_label"] = np.where(
-    (df["Equilibrium temperature"] > -1) &
-    (df["Equilibrium temperature"] < 1),
+df_unscaled["habitability_label"] = np.where(
+    (df_unscaled["Equilibrium temperature"] >= 180) &
+    (df_unscaled["Equilibrium temperature"] <= 350) &
+    (df_unscaled["Planet radius"] >= 0.6) &
+    (df_unscaled["Planet radius"] <= 2.5),
     1,
     0
 )
+
+print("\nHabitability label distribution:")
+print(df_unscaled["habitability_label"].value_counts())
+print(df_unscaled["habitability_label"].value_counts(normalize=True))
+
+
 
 # ---------------- Features & Target ----------------
 FEATURE_COLUMNS = [
@@ -59,11 +70,8 @@ FEATURE_COLUMNS = [
     "Star type"
 ]
 
-X = df[FEATURE_COLUMNS]
-y = df["habitability_label"]
-
-
-y = df["habitability_label"]
+X = df_preprocessed[FEATURE_COLUMNS]
+y = df_unscaled["habitability_label"]
 
 # ---------------- Column Separation ----------------
 categorical_cols = ["Star type"]
@@ -201,7 +209,7 @@ plot_roc_curve(best_model, best_model_name)
 MODEL_DIR = BASE_DIR / "models"
 MODEL_DIR.mkdir(exist_ok=True)
 
-MODEL_PATH = MODEL_DIR / "best_exohabit_model.pkl"
+MODEL_PATH = MODEL_DIR / "best_exohabit_model_v2.pkl"
 joblib.dump(best_model, MODEL_PATH)
 
 

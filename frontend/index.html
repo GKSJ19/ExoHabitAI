@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ExoHabit AI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="hero">
+        <h1>ExoHabit AI</h1>
+        <p>Machine Learning–Based Prediction of Habitable Exoplanets</p>
+    </header>
+
+    <!-- Single Prediction -->
+    <section class="card">
+        <h2>Single Exoplanet Prediction</h2>
+
+        <form id="planetForm">
+
+            <h3 class="section-title">Planetary Parameters</h3>
+
+            <div class="field">
+                <label>Planet Radius (Earth radii)</label>
+                <input type="number" step="any" id="radius" placeholder="e.g. 1.02" required>
+            </div>
+
+            <div class="field">
+                <label>Planet Mass (Earth masses)</label>
+                <input type="number" step="any" id="mass" placeholder="e.g. 1.10" required>
+            </div>
+
+            <div class="field">
+                <label>Orbital Period (days)</label>
+                <input type="number" step="any" id="period" placeholder="e.g. 365" required>
+            </div>
+
+            <div class="field">
+                <label>Semi-major Axis (AU)</label>
+                <input type="number" step="any" id="axis" placeholder="e.g. 1.0" required>
+            </div>
+            <div class="field">
+                <label>Equilibrium Temperature (K)</label>
+                <input type="number" step="any" id="eqTemp" placeholder="e.g. 288" required>
+            </div>
+
+            <div class="field">
+                <label>Planet Density (g/cm³)</label>
+                <input type="number" step="any" id="density" placeholder="e.g. 5.5" required>
+            </div>
+
+            <h3 class="section-title">Stellar Parameters</h3>
+
+            <div class="field">
+                <label>Host Star Temperature (K)</label>
+                <input type="number" step="any" id="starTemp" placeholder="e.g. 5778" required>
+            </div>
+
+            <div class="field">
+                <label>Star Luminosity (Solar units)</label>
+                <input type="number" step="any" id="luminosity" placeholder="e.g. 1.0" required>
+            </div>
+
+            <div class="field">
+                <label>Star Metallicity</label>
+                <input type="number" step="any" id="metallicity" placeholder="e.g. 0.01" required>
+            </div>
+
+            <div class="field">
+                <label>Star Type</label>
+                <input type="text" id="starType" placeholder="G, K, M, F..." required>
+            </div>
+
+            <div class="calculated">
+                <p>Habitability Score: <span id="habitScore">—</span></p>
+                <p>Orbital Stability: <span id="orbitalStability">—</span></p>
+            </div>
+
+            <button type="submit">Predict Habitability</button>
+        </form>
+
+        <div id="predictionResult" class="result"></div>
+    </section>
+
+    <!-- JSON Prediction -->
+    <section class="card">
+        <h2>Advanced JSON Input</h2>
+
+        <textarea id="jsonInput" placeholder='{
+  "Planet radius": 1.02,
+  "Planet mass": 1.1,
+  "Orbital period": 365,
+  "Semi-major axis": 1.0,
+  "Planet density": 5.4,
+  "Host star temperature": 5770,
+  "Star luminosity": 1.0,
+  "Star metallicity": 0.01,
+  "habitability_score": 2.43,
+  "orbital_stability": 365,
+  "Star type": "G"
+}'></textarea>
+
+        <button id="jsonPredict">Predict from JSON</button>
+        <div id="jsonResult" class="result"></div>
+    </section>
+
+    <!-- Ranking -->
+    <section class="card">
+        <h2>Exoplanet Ranking</h2>
+
+        <button id="addPlanet">Add Exoplanet</button>
+        <div id="planetList"></div>
+
+        <button id="rankPlanets">Rank Exoplanets</button>
+        <div id="rankingResult" class="result"></div>
+    </section>
+
+    <footer>
+        <p></p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

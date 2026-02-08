@@ -123,6 +123,13 @@ df["orbital_stability"] = df["Orbital period"] / df["Semi-major axis"]
 
 print("Orbital Stability Factor calculated: ", df["orbital_stability"].head())
 
+
+PROCESSED_DIR = BASE_DIR / "data" / "processed"
+PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
+# Save cleaned but unscaled data
+df.to_csv(PROCESSED_DIR / "cleaned_unscaled.csv", index=False)
+
+
 #------- Feature Scaling: Standardization-----------
 import numpy as np
 numeric_cols = df.select_dtypes(include=["float64", "int64"]).columns
@@ -134,5 +141,5 @@ df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].median())
 print("First 5 rows of the cleaned data: \n", df.head())
 
 #Saving the cleaned dataset
-df.to_csv("preprocessed.csv", index=False)
+df.to_csv(PROCESSED_DIR / "preprocessed.csv", index=False)
 print("Preprocessed dataset saved as preprocessed.csv")
