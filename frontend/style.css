@@ -1,0 +1,105 @@
+body {
+    font-family: "Segoe UI", sans-serif;
+    transition: background 0.4s;
+}
+
+/* DARK MODE */
+body.dark {
+    background: radial-gradient(circle at top, #0b1d3a, #000814);
+    color: white;
+}
+
+/* LIGHT MODE */
+body.light {
+    background: linear-gradient(to bottom, #87ceeb, #ffffff);
+    color: #222;
+}
+
+.main-card {
+    max-width: 900px;
+    margin-top: 80px;
+    padding: 30px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+}
+
+body.light .main-card {
+    background: rgba(255,255,255,0.85);
+}
+
+.section-title {
+    color: #4facfe;
+    margin-bottom: 10px;
+}
+
+label {
+    font-weight: 500;
+}
+
+/* Button */
+.predict-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 30px;
+    background: linear-gradient(45deg, #4facfe, #00f2fe);
+    color: white;
+    font-weight: bold;
+    border: none;
+}
+
+/* Toggle Switch */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 30px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.switch {
+    position: relative;
+    width: 50px;
+    height: 25px;
+}
+
+.switch input {
+    display: none;
+}
+
+.slider {
+    position: absolute;
+    inset: 0;
+    background: #ccc;
+    border-radius: 25px;
+    cursor: pointer;
+}
+
+.slider::before {
+    content: "";
+    position: absolute;
+    height: 19px;
+    width: 19px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+input:checked + .slider {
+    background: #4facfe;
+}
+
+input:checked + .slider::before {
+    transform: translateX(24px);
+}
+
+/* Result Box */
+.result-card {
+    padding: 20px;
+    border-radius: 12px;
+    background: rgba(0,0,0,0.3);
+    text-align: center;
+}
