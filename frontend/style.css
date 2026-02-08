@@ -1,0 +1,54 @@
+/* General page styling */
+body {
+    background-color: #f4f6f9;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Main heading */
+h2 {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* Card styling */
+.card {
+    border-radius: 12px;
+    border: none;
+}
+
+/* Form labels */
+.form-label {
+    font-weight: 500;
+}
+
+/* Button styling */
+.btn-primary {
+    background-color: #0066cc;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #004999;
+}
+
+/* Alerts spacing */
+.alert {
+    margin-top: 10px;
+}
+
+/* Table styling */
+.table th {
+    background-color: #f0f3f6;
+    width: 50%;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    h2 {
+        font-size: 1.4rem;
+    }
+
+    .card {
+        padding: 1rem !important;
+    }
+}
