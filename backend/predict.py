@@ -32,3 +32,5 @@ prob = model.predict_proba(input_data)[0][1]
 
 print("\nPlanet Status:", "HABITABLE 🌍" if prediction == 1 else "NOT HABITABLE ❌")
 print("Habitability Probability:", round(prob * 100, 2), "%")
+
+

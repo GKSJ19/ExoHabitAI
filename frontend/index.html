@@ -1,187 +1,96 @@
-<!-- <!DOCTYPE html>
-<html>
-<head>
-<title>ExoHabitAI</title>
-<link rel="stylesheet" href="style.css">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
-</head>
-
-<body>
-
-<div class="stars"></div>
-
-<div class="container">
-
-<h1>🚀 ExoHabitAI</h1>
-<h3>NASA Exoplanet Habitability Scanner</h3>
-
-<form id="predictionForm">
-
-<input id="pl_rade" placeholder="Planet Radius (Earth units)" required>
-<input id="pl_orbper" placeholder="Orbital Period (days)" required>
-<input id="pl_eqt" placeholder="Planet Temperature (K)" required>
-<input id="st_teff" placeholder="Star Temperature (K)" required>
-<input id="st_rad" placeholder="Star Radius" required>
-<input id="st_mass" placeholder="Star Mass" required>
-
-<button>SCAN PLANET</button>
-
-</form>
-
-<div class="result">
-
-<h2 id="status"></h2>
-<p>Habitability Probability</p>
-<h1 id="score"></h1>
-
-</div>
-
-</div>
-
-<script src="script.js"></script>
-
-</body>
-</html> -->
-
-
-
-
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>ExoHabitAI</title>
-
-<style>
-body{
-margin:0;
-font-family:Segoe UI;
-background:linear-gradient(120deg,#050b1d,#0b1f3a);
-color:white;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-}
-
-.card{
-background:#0f2747;
-padding:40px;
-border-radius:20px;
-width:380px;
-box-shadow:0 0 40px rgba(0,255,255,.2);
-text-align:center;
-}
-
-h1{
-margin-bottom:10px;
-}
-
-.subtitle{
-color:#aaa;
-margin-bottom:25px;
-}
-
-input{
-width:90%;
-padding:10px;
-margin:8px 0;
-border-radius:10px;
-border:none;
-outline:none;
-background:#051529;
-color:white;
-}
-
-button{
-margin-top:15px;
-padding:12px 25px;
-border:none;
-border-radius:20px;
-background:#00ffe7;
-font-weight:bold;
-cursor:pointer;
-transition:.3s;
-}
-
-button:hover{
-transform:scale(1.05);
-}
-
-.result{
-margin-top:20px;
-font-size:20px;
-}
-
-.footer{
-margin-top:15px;
-font-size:12px;
-color:#888;
-}
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExoHabitAI - Exoplanet Habitability Scanner</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 </head>
-
 <body>
+    <div class="stars"></div>
+    <div class="stars2"></div>
+    <div class="stars3"></div>
+    
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="planet-icon"></div>
+                <h1>EXOHABITAI</h1>
+            </div>
+            <p class="subtitle">EXOPLANET HABITABILITY PREDICTION SYSTEM</p>
+        </header>
 
-<div class="card">
+        <div class="scanner-panel">
+            <div class="panel-header">
+                <span class="status-indicator"></span>
+                <h2>PLANETARY PARAMETERS</h2>
+            </div>
 
-<h1>🌍 ExoHabitAI</h1>
-<div class="subtitle">Exoplanet Habitability Predictor</div>
+            <form id="scanForm">
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label for="pl_rade">Planet Radius (Earth radii)</label>
+                        <input type="number" id="pl_rade" step="0.01" required placeholder="e.g., 1.2">
+                    </div>
 
-<input id="planet_radius" placeholder="Planet Radius (Earth)" value="1">
-<input id="planet_mass" placeholder="Planet Mass (Earth)" value="1">
-<input id="orbital_period" placeholder="Orbital Period (days)" value="365">
-<input id="orbital_radius" placeholder="Orbital Radius (AU)" value="1">
-<input id="eccentricity" placeholder="Eccentricity" value="0.02">
-<input id="equilibrium_temp" placeholder="Temperature (Kelvin)" value="288">
+                    <div class="input-group">
+                        <label for="pl_orbper">Orbital Period (days)</label>
+                        <input type="number" id="pl_orbper" step="0.01" required placeholder="e.g., 365.25">
+                    </div>
 
-<button onclick="predict()">Predict Habitability</button>
+                    <div class="input-group">
+                        <label for="pl_eqt">Planet Temperature (K)</label>
+                        <input type="number" id="pl_eqt" step="0.01" required placeholder="e.g., 288">
+                    </div>
 
-<div id="result" class="result"></div>
+                    <div class="input-group">
+                        <label for="st_teff">Star Temperature (K)</label>
+                        <input type="number" id="st_teff" step="0.01" required placeholder="e.g., 5778">
+                    </div>
 
-<div class="footer">Powered by Machine Learning 🚀</div>
+                    <div class="input-group">
+                        <label for="st_rad">Star Radius (Solar radii)</label>
+                        <input type="number" id="st_rad" step="0.01" required placeholder="e.g., 1.0">
+                    </div>
 
-</div>
+                    <div class="input-group">
+                        <label for="st_mass">Star Mass (Solar masses)</label>
+                        <input type="number" id="st_mass" step="0.01" required placeholder="e.g., 1.0">
+                    </div>
+                </div>
 
-<script>
+                <button type="submit" class="scan-button" id="scanButton">
+                    <span class="button-text">SCAN PLANET</span>
+                    <span class="button-loader"></span>
+                </button>
+            </form>
+        </div>
 
-function predict(){
+        <div class="results-panel" id="resultsPanel">
+            <div class="panel-header">
+                <span class="status-indicator pulse"></span>
+                <h2>ANALYSIS RESULTS</h2>
+            </div>
+            
+            <div class="results-content">
+                <div class="planet-visual" id="planetVisual"></div>
+                
+                <div class="metrics">
+                    <div class="metric-card">
+                        <div class="metric-label">HABITABILITY PROBABILITY</div>
+                        <div class="metric-value" id="probabilityValue">--</div>
+                    </div>
+                    
+                    <div class="metric-card status-card">
+                        <div class="metric-label">PLANET STATUS</div>
+                        <div class="metric-value status-text" id="statusValue">AWAITING SCAN</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-document.getElementById("result").innerHTML="⏳ Calculating...";
-
-fetch("/predict",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({
-
-planet_radius:+planet_radius.value,
-planet_mass:+planet_mass.value,
-orbital_period:+orbital_period.value,
-orbital_radius:+orbital_radius.value,
-eccentricity:+eccentricity.value,
-equilibrium_temp:+equilibrium_temp.value
-
-})
-})
-
-.then(r=>r.json())
-.then(d=>{
-
-let emoji = d.status=="Habitable" ? "🌍" : "❌";
-
-document.getElementById("result").innerHTML =
-emoji+" "+d.status+"<br>"+d.probability+"% Probability";
-
-});
-}
-
-</script>
-
+    <script src="script.js"></script>
 </body>
 </html>
-
-
-
-
-
