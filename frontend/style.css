@@ -1,149 +1,138 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
+
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  font-family: "Inter", "Segoe UI", sans-serif;
-  color: #e6ebff;
-  background-color: #050814;
-  background-image:
-    radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.7), transparent),
-    radial-gradient(1px 1px at 70% 60%, rgba(255,255,255,0.5), transparent),
-    radial-gradient(2px 2px at 40% 80%, rgba(255,255,255,0.4), transparent),
-    linear-gradient(to bottom, #050814, #02030a);
+  min-height: 100vh;
+  color: #ffffff;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: radial-gradient(
+      circle at top,
+      #1b2735 0%,
+      #090a0f 40%,
+      #02030a 100%
+  );
+  overflow-x: hidden;
+}
+
+/* ---------- STAR LAYERS ---------- */
+
+.stars,
+.stars::after {
+  content: "";
+  position: fixed;
+  inset: 0;
   background-repeat: repeat;
+  pointer-events: none;
 }
 
-.hero {
-  text-align: center;
-  padding: 50px 20px 20px;
+.stars {
+  background-image:
+    radial-gradient(1px 1px at 20px 30px, #fff, transparent),
+    radial-gradient(1px 1px at 100px 150px, #fff, transparent),
+    radial-gradient(1px 1px at 200px 80px, #fff, transparent),
+    radial-gradient(1px 1px at 300px 200px, #fff, transparent),
+    radial-gradient(1px 1px at 400px 100px, #fff, transparent);
+  background-size: 500px 500px;
+  animation: twinkle 6s infinite alternate;
 }
 
-.hero h1 {
-  font-size: 2.8rem;
-  font-weight: 600;
+.stars::after {
+  background-image:
+    radial-gradient(1px 1px at 50px 50px, #aaa, transparent),
+    radial-gradient(1px 1px at 150px 250px, #aaa, transparent),
+    radial-gradient(1px 1px at 250px 150px, #aaa, transparent);
+  background-size: 400px 400px;
+  animation: twinkle 8s infinite alternate;
+  opacity: 0.7;
 }
 
-.hero p {
-  opacity: 0.8;
+@keyframes twinkle {
+  from {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-.card {
-  background: rgba(10, 15, 35, 0.85);
-  backdrop-filter: blur(6px);
-  margin: 40px auto;
-  padding: 30px;
-  width: 90%;
-  max-width: 900px;
-  border-radius: 12px;
-  border: 1px solid rgba(120, 150, 255, 0.15);
+/* ---------- GLASS CARDS ---------- */
+
+.glass {
+  background: rgba(15, 18, 30, 0.85);
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 30px rgba(0, 180, 255, 0.12);
 }
 
-h2 {
-  font-size: 1.6rem;
-  font-weight: 500;
-  margin-bottom: 20px;
+/* ---------- TYPOGRAPHY ---------- */
+
+.hero-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 3rem;
+  letter-spacing: 1px;
 }
 
-.section-title {
-  margin-top: 30px;
-  margin-bottom: 12px;
-  font-size: 1.1rem;
-  font-weight: 500;
-  color: #a9b9ff;
+.hero-subtitle {
+  color: #ffffff;
+  opacity: 0.85;
 }
 
-.field {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 14px;
+.section-heading,
+.section-title,
+.form-label {
+  color: #ffffff;
 }
 
-.field label {
-  font-size: 0.9rem;
-  margin-bottom: 6px;
-  color: #b9c7ff;
+/* ---------- INPUTS ---------- */
+
+.form-control,
+.form-select {
+  background-color: #0c0f1a !important;
+  color: #ffffff !important;
+  border: 1px solid #3a3f55;
 }
 
-input, textarea {
-  background-color: rgba(5, 8, 20, 0.9);
-  border: 1px solid rgba(120, 150, 255, 0.25);
-  color: #e6ebff;
-  padding: 11px 12px;
-  border-radius: 6px;
-  font-size: 0.95rem;
-}
-
-input::placeholder,
-textarea::placeholder {
-  color: rgba(200, 210, 255, 0.45);
-}
-
-input:focus,
-textarea:focus {
-  outline: none;
-  border-color: #8aa2ff;
+.form-control::placeholder {
+  color: #a0a6c0;
 }
 
 textarea {
-  width: 100%;
-  min-height: 180px;
-  resize: vertical;
-  font-family: "JetBrains Mono", monospace;
+  font-family: monospace;
 }
 
-.calculated {
-  margin: 20px 0;
-  padding: 12px;
-  background: rgba(0,0,0,0.3);
-  border-radius: 6px;
-}
+/* ---------- BUTTONS ---------- */
 
-button {
-  background: linear-gradient(135deg, #6f88ff, #8fb5ff);
+.btn-primary {
+  background-color: #1e88e5;
   border: none;
-  color: #050814;
-  padding: 12px 18px;
-  border-radius: 6px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-  margin-top: 12px;
 }
 
-button:hover {
-  opacity: 0.95;
+.btn-primary:hover {
+  background-color: #1565c0;
 }
 
-.result {
-  margin-top: 15px;
+.btn-outline-light:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
+/* ---------- OUTPUT BOXES (RESTORED STYLE) ---------- */
 
-.success {
-  color: #8fffbe;
-}
-
-.error {
-  color: #ff9c9c;
-}
-
-.json-card {
+.output-box {
+  background: #dff6ff;
+  color: #000000;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
   position: relative;
-  margin-bottom: 15px;
+  box-shadow: 0 0 25px rgba(0, 200, 255, 0.35);
 }
 
-.remove-btn {
-  position: absolute;
-  top: 10px;
-  right: 12px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  color: rgba(255, 120, 120, 0.85);
+.output-box strong {
+  color: #003a5d;
 }
 
-footer {
-  text-align: center;
-  padding: 25px;
-  opacity: 0.6;
+.output-box .btn-close {
+  filter: none;
 }

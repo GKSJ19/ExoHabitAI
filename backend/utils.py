@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 REQUIRED_FEATURES = [
     "Planet radius",
@@ -9,10 +10,26 @@ REQUIRED_FEATURES = [
     "Host star temperature",
     "Star luminosity",
     "Star metallicity",
-    "habitability_score",
-    "orbital_stability",
     "Star type"
 ]
+
+def compute_derived_features(df):
+    # Habitability score (same logic as training)
+    df["habitability_score"] = (
+        (1 / np.abs(df["Host star temperature"] - 288)) +
+        (1 / np.abs(df["Planet radius"] - 1)) +
+        (1 / df["Semi-major axis"])
+    )
+
+    # Orbital stability
+    df["orbital_stability"] = df["Orbital period"] / df["Semi-major axis"]
+
+    # Clean infinities / NaNs
+    df.replace([np.inf, -np.inf], np.nan, inplace=True)
+    df.fillna(df.median(numeric_only=True), inplace=True)
+
+    return df
+
 
 def validate_input(data):
     if not data:
@@ -23,32 +40,39 @@ def validate_input(data):
         return False, f"Missing parameters: {missing}"
 
     try:
-        # Create DataFrame with correct column names
-        df = pd.DataFrame([data], columns=REQUIRED_FEATURES)
+        df = pd.DataFrame([data])
+
+        # Ensure correct dtypes
+        numeric_cols = [
+            "Planet radius", "Planet mass", "Orbital period",
+            "Semi-major axis", "Planet density",
+            "Host star temperature", "Star luminosity", "Star metallicity"
+        ]
+
+        for col in numeric_cols:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+
+        # Star type must be string
+        df["Star type"] = df["Star type"].astype(str)
+
+        df = compute_derived_features(df)
+
     except Exception as e:
         return False, str(e)
 
     return True, df
 
 
-
 def rank_exoplanets(planets, model):
-    """
-    Ranks multiple exoplanets based on habitability score.
-    """
-    ranked_planets = []
+    ranked = []
 
     for planet in planets:
-        valid, result = validate_input(planet)
+        valid, df = validate_input(planet)
         if valid:
-            probability = model.predict_proba(result)[0][1]
-            planet_copy = planet.copy()
-            planet_copy["habitability_score"] = round(float(probability), 4)
-            ranked_planets.append(planet_copy)
+            prob = model.predict_proba(df)[0][1]
+            planet_out = planet.copy()
+            planet_out["habitability_score"] = round(float(prob), 4)
+            ranked.append(planet_out)
 
-    ranked_planets.sort(
-        key=lambda x: x["habitability_score"],
-        reverse=True
-    )
-
-    return ranked_planets
+    ranked.sort(key=lambda x: x["habitability_score"], reverse=True)
+    return ranked

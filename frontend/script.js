@@ -1,157 +1,128 @@
-const API_BASE = "http://127.0.0.1:5000";
+const API = "http://127.0.0.1:5000";
 
-/* -------- INPUT REFERENCES -------- */
-const radius = document.getElementById("radius");
-const mass = document.getElementById("mass");
-const period = document.getElementById("period");
-const axis = document.getElementById("axis");
-const density = document.getElementById("density");
-const eqTemp = document.getElementById("eqTemp");
+/* ---------- UTILITY ---------- */
 
-const starTemp = document.getElementById("starTemp");
-const luminosity = document.getElementById("luminosity");
-const metallicity = document.getElementById("metallicity");
-const starType = document.getElementById("starType");
-
-const habitScoreEl = document.getElementById("habitScore");
-const orbitalStabilityEl = document.getElementById("orbitalStability");
-
-/* -------- AUTO CALCULATION -------- */
-function calculateMetrics() {
-    const r = parseFloat(radius.value);
-    const a = parseFloat(axis.value);
-    const p = parseFloat(period.value);
-    const t = parseFloat(eqTemp.value);
-
-    if (!r || !a || !p || !t) return;
-
-    const EPSILON = 0.0001;
-
-    const habitability =
-        (1 / Math.max(Math.abs(t - 288), EPSILON)) +
-        (1 / Math.max(Math.abs(r - 1), EPSILON)) +
-        (1 / Math.max(a, EPSILON));
-
-
-    const stability = p / a;
-
-    habitScoreEl.textContent = habitability.toFixed(4);
-    orbitalStabilityEl.textContent = stability.toFixed(4);
+function renderResult(containerId, html) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = `
+    <div class="output-box">
+      <button class="btn-close position-absolute top-0 end-0 m-2"
+        onclick="this.parentElement.remove()"></button>
+      ${html}
+    </div>
+  `;
 }
 
-[radius, axis, period, eqTemp].forEach(el =>
-    el.addEventListener("input", calculateMetrics)
-);
+/* ---------- FORM PREDICTION ---------- */
 
-/* -------- SINGLE PREDICTION -------- */
-document.getElementById("planetForm").addEventListener("submit", async e => {
-    e.preventDefault();
+function predictFromForm() {
+  const fields = [
+    "radius", "mass", "period", "axis",
+    "density", "temp", "lum", "met", "type"
+  ];
 
-    const payload = {
-        "Planet radius": Number(radius.value),
-        "Planet mass": Number(mass.value),
-        "Orbital period": Number(period.value),
-        "Semi-major axis": Number(axis.value),
-        "Equilibrium temperature": Number(eqTemp.value),
-        "Planet density": Number(density.value),
-        "Host star temperature": Number(starTemp.value),
-        "Star luminosity": Number(luminosity.value),
-        "Star metallicity": Number(metallicity.value),
-        "habitability_score": Number(habitScoreEl.textContent),
-        "orbital_stability": Number(orbitalStabilityEl.textContent),
-        "Star type": starType.value
-    };
-
-    const resultBox = document.getElementById("predictionResult");
-    resultBox.innerHTML = "Predicting…";
-
-    try {
-        const res = await fetch(`${API_BASE}/predict`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-            resultBox.innerHTML = `<p class="error">${data.message}</p>`;
-            return;
-        }
-
-        resultBox.innerHTML = `
-      <p class="success">
-        <strong>${data.prediction}</strong><br>
-        Confidence Score: ${data.confidence_score}
-      </p>`;
-    } catch (err) {
-        resultBox.innerHTML = `<p class="error">Backend not reachable</p>`;
+  for (let id of fields) {
+    const el = document.getElementById(id);
+    if (!el.value || el.value.trim() === "") {
+      alert("Please fill in all fields before predicting.");
+      return;
     }
-});
+  }
 
-/* -------- JSON PREDICTION -------- */
-document.getElementById("jsonPredict").addEventListener("click", async () => {
-    const resultBox = document.getElementById("jsonResult");
+  const data = {
+    "Planet radius": Number(radius.value),
+    "Planet mass": Number(mass.value),
+    "Orbital period": Number(period.value),
+    "Semi-major axis": Number(axis.value),
+    "Planet density": Number(density.value),
+    "Host star temperature": Number(temp.value),
+    "Star luminosity": Number(lum.value),
+    "Star metallicity": Number(met.value),
+    "Star type": type.value
+  };
 
-    try {
-        const json = JSON.parse(document.getElementById("jsonInput").value);
+  sendPredict(data, "formResult");
+}
 
-        const res = await fetch(`${API_BASE}/predict`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(json)
-        });
+/* ---------- JSON PREDICTION ---------- */
 
-        const data = await res.json();
+function predictFromJSON() {
+  try {
+    const data = JSON.parse(jsonInput.value);
+    sendPredict(data, "jsonResult");
+  } catch {
+    alert("Invalid JSON format.");
+  }
+}
 
-        resultBox.innerHTML = res.ok
-            ? `<p class="success"><strong>${data.prediction}</strong><br>Confidence Score: ${data.confidence_score}</p>`
-            : `<p class="error">${data.message}</p>`;
-    } catch {
-        resultBox.innerHTML = `<p class="error">Invalid JSON format</p>`;
-    }
-});
+/* ---------- SHARED PREDICT ---------- */
 
-/* -------- RANKING -------- */
-const planetList = document.getElementById("planetList");
+function sendPredict(payload, outputId) {
+  fetch(`${API}/predict`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  })
+    .then(res => res.json())
+    .then(data => {
+      renderResult(
+        outputId,
+        `<strong>Prediction:</strong> ${data.prediction}<br>
+         <strong>Confidence:</strong> ${(data.confidence_score * 100).toFixed(2)}%`
+      );
+    })
+    .catch(err => {
+      renderResult(outputId, `<span class="text-danger">Error occurred</span>`);
+    });
+}
 
-document.getElementById("addPlanet").onclick = () => {
-    const wrapper = document.createElement("div");
-    wrapper.className = "json-card";
+/* ---------- MULTI PLANET ---------- */
 
-    const removeBtn = document.createElement("span");
-    removeBtn.textContent = "✖";
-    removeBtn.className = "remove-btn";
-    removeBtn.onclick = () => wrapper.remove();
+function addPlanetJson() {
+  const container = document.getElementById("planetJsonContainer");
 
-    const textarea = document.createElement("textarea");
-    textarea.placeholder = "Enter exoplanet JSON";
+  const card = document.createElement("div");
+  card.className = "card glass mt-3 p-3 position-relative";
 
-    wrapper.appendChild(removeBtn);
-    wrapper.appendChild(textarea);
-    planetList.appendChild(wrapper);
-};
+  card.innerHTML = `
+    <button class="btn-close btn-close-white position-absolute top-0 end-0 m-2"
+      onclick="this.parentElement.remove()"></button>
 
-document.getElementById("rankPlanets").onclick = async () => {
-    const resultBox = document.getElementById("rankingResult");
+    <textarea class="form-control planet-json" rows="6" placeholder='{
+  "Planet radius": 1.2,
+  "Planet mass": 2.0,
+  "Orbital period": 365,
+  "Semi-major axis": 1.0,
+  "Planet density": 5.5,
+  "Host star temperature": 288,
+  "Star luminosity": 1.0,
+  "Star metallicity": 0.02,
+  "Star type": "G"
+}'></textarea>
+  `;
 
-    try {
-        const planets = [...planetList.querySelectorAll("textarea")]
-            .map(t => JSON.parse(t.value));
+  container.appendChild(card);
+}
 
-        const res = await fetch(`${API_BASE}/rank`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ planets })
-        });
+function rankPlanets() {
+  const planets = [];
+  document.querySelectorAll(".planet-json").forEach(t => {
+    if (t.value.trim()) planets.push(JSON.parse(t.value));
+  });
 
-        const data = await res.json();
+  fetch(`${API}/rank`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ planets })
+  })
+    .then(res => res.json())
+    .then(data => {
+      let list = "<ol>";
+      data.ranked_exoplanets.forEach(p => {
+        list += `<li>Habitability Score: ${p.habitability_score}</li>`;
+      });
+      list += "</ol>";
 
-        resultBox.innerHTML = data.ranked_exoplanets
-            .map((p, i) =>
-                `<p>${i + 1}. Habitability Probability: ${p.habitability_score}</p>`
-            ).join("");
-    } catch {
-        resultBox.innerHTML = `<p class="error">Invalid JSON in ranking input</p>`;
-    }
-};
+      renderResult("rankResult", list);
+    });
+}

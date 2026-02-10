@@ -31,29 +31,26 @@ import joblib
 
 from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
-PROCESSED_DIR = BASE_DIR / "data" / "processed"
+DATA_PATH = BASE_DIR / "data" / "processed" / "preprocessed.csv"
 
-df_unscaled = pd.read_csv(PROCESSED_DIR / "cleaned_unscaled.csv")
-df_preprocessed = pd.read_csv(PROCESSED_DIR / "preprocessed.csv")
-
-
+df = pd.read_csv(DATA_PATH)
 
 
 # ---------------- Define Target Variable ----------------
-df_unscaled["habitability_label"] = np.where(
-    (df_unscaled["Equilibrium temperature"] >= 180) &
-    (df_unscaled["Equilibrium temperature"] <= 350) &
-    (df_unscaled["Planet radius"] >= 0.6) &
-    (df_unscaled["Planet radius"] <= 2.5),
+# ---------------- Define Target Variable (Physically Motivated) ----------------
+df["habitability_label"] = np.where(
+    (df["Equilibrium temperature"].between(200, 350)) &
+    (df["Planet radius"].between(0.5, 2.0)),
     1,
     0
 )
 
-print("\nHabitability label distribution:")
-print(df_unscaled["habitability_label"].value_counts())
-print(df_unscaled["habitability_label"].value_counts(normalize=True))
+print("Class distribution:")
+print(df["habitability_label"].value_counts())
 
 
+if df["habitability_label"].nunique() < 2:
+    raise ValueError("Target variable has only one class. Fix labeling logic.")
 
 # ---------------- Features & Target ----------------
 FEATURE_COLUMNS = [
@@ -70,8 +67,11 @@ FEATURE_COLUMNS = [
     "Star type"
 ]
 
-X = df_preprocessed[FEATURE_COLUMNS]
-y = df_unscaled["habitability_label"]
+X = df[FEATURE_COLUMNS]
+y = df["habitability_label"]
+
+
+y = df["habitability_label"]
 
 # ---------------- Column Separation ----------------
 categorical_cols = ["Star type"]
@@ -209,7 +209,7 @@ plot_roc_curve(best_model, best_model_name)
 MODEL_DIR = BASE_DIR / "models"
 MODEL_DIR.mkdir(exist_ok=True)
 
-MODEL_PATH = MODEL_DIR / "best_exohabit_model_v2.pkl"
+MODEL_PATH = MODEL_DIR / "best_exohabit_model.pkl"
 joblib.dump(best_model, MODEL_PATH)
 
 
