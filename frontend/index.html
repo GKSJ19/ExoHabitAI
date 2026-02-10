@@ -11,6 +11,7 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body class="dark">
 
 <!-- Theme Toggle -->
@@ -22,10 +23,23 @@
     </label>
     🌙
 </div>
+<div id="galaxy-bg"></div>
+<canvas id="stars-canvas"></canvas>
 
 <div class="container main-card">
 
     <h2 class="text-center mb-4">🌍 Exoplanet Habitability Prediction</h2>
+
+    <!-- Live Habitability Meter -->
+    <div class="mb-4">
+        <label class="form-label">🌡️ Live Habitability Indicator</label>
+        <div class="progress">
+            <div id="habitBar" class="progress-bar bg-secondary" style="width: 0%">
+                0%
+            </div>
+        </div>
+        <small class="text-muted">Updates as you change values</small>
+    </div>
 
     <form id="predictForm">
 
@@ -33,14 +47,18 @@
         <h5 class="section-title">🪐 Planetary Parameters</h5>
 
         <div class="row g-3">
+
             <div class="col-md-4">
                 <label>Planet Radius (Earth Units)</label>
-                <input type="number" step="0.1" class="form-control" id="pl_rade" placeholder="e.g. 1.1" required>
+               <input type="number" class="form-control" min="0.1" max="3" step="0.1" id="pl_rade" placeholder="e.g. 1.0" required>
+
+                <small>Value: <span id="pl_rade_val">1.0</span> 🌍</small>
             </div>
 
             <div class="col-md-4">
                 <label>Planet Mass (Earth Units)</label>
-                <input type="number" step="0.1" class="form-control" id="pl_bmasse" placeholder="e.g. 1.0" required>
+                <input type="number" class="form-control" min="0.1" max="10" step="0.1" id="pl_bmasse" placeholder = "e.g. 1.0" required>
+                <small>Value: <span id="pl_bmasse_val">1.0</span> 🧱</small>
             </div>
 
             <div class="col-md-4">
@@ -50,22 +68,23 @@
 
             <div class="col-md-6">
                 <label>Equilibrium Temperature (K)</label>
-                <input type="number" class="form-control" id="pl_eqt" placeholder="e.g. 280" required>
+                <input type="range" class="form-range" min="100" max="500" step="1" id="pl_eqt">
+                <small>Value: <span id="pl_eqt_val">280</span> K</small>
             </div>
 
             <div class="col-md-6">
                 <label>Semi-Major Axis (AU)</label>
-                <input type="number" step="0.01" class="form-control" id="pl_orbsmax" placeholder="e.g. 0.4" required>
+                <input type="range" class="form-range" min="0.01" max="5" step="0.01" id="pl_orbsmax">
+                <small>Value: <span id="pl_orbsmax_val">1.0</span> AU</small>
             </div>
         </div>
-
-        <!-- Stellar Parameters -->
         <h5 class="section-title mt-4">☀️ Stellar Parameters</h5>
 
         <div class="row g-3">
             <div class="col-md-6">
                 <label>Star Temperature (K)</label>
-                <input type="number" class="form-control" id="st_teff" placeholder="e.g. 5700" required>
+                <input type="range" class="form-range" min="3000" max="8000" step="50" id="st_teff">
+                <small>Value: <span id="st_teff_val">5700</span> K</small>
             </div>
 
             <div class="col-md-6">
@@ -84,17 +103,30 @@
             </div>
         </div>
 
-        <button type="submit" class="btn predict-btn mt-4">
-            🚀 Predict Habitability
-        </button>
+        <!-- Buttons -->
+        <div class="d-flex gap-3 mt-4">
+            <button type="submit" class="btn predict-btn w-100">
+                🚀 Predict Habitability
+            </button>
+
+            <button type="button" id="resetBtn" class="btn btn-outline-secondary w-100">
+                🔄 Reset
+            </button>
+        </div>
+        <div class="text-center mt-3">
+            <button type="button" class="btn btn-outline-info" onclick="loadEarthExample()">
+                🌍 Load Earth Example
+            </button>
+        </div>
 
     </form>
-
-    <!-- Result -->
     <div id="resultBox" class="mt-4"></div>
 
 </div>
 
 <script src="script.js"></script>
+
+
+
 </body>
 </html>
