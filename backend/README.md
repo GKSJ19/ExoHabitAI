@@ -1,4 +1,4 @@
-# ExoHabitAI Backend API — Refined Documentation
+# ExoHabitAI Backend API —  Documentation
 
 ## 1. Objective
 
@@ -147,4 +147,4 @@ pytest test_api.py -v
 ## 10. Version
 
 **Version:** 1.1.0  
-**Last Updated:** February 7, 2026
+**Last Updated:** February 11, 2026
