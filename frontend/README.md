@@ -1,8 +1,8 @@
 # ExoHabitAI Frontend
 
-Modern, responsive web interface for the ExoHabitAI exoplanet habitability prediction system.
+Modern and responsive web interface for the ExoHabitAI exoplanet habitability prediction system.
 
-## 🚀 Tech Stack
+##  Tech Stack
 
 - **React 18** - UI library
 - **Vite** - Build tool (fast, modern)
@@ -73,7 +73,7 @@ frontend/
 └── tailwind.config.js
 ```
 
-## 🎯 Features
+##  Features
 
 ### 1. Home Page
 - Impressive hero section with animations
@@ -114,7 +114,7 @@ frontend/
 - Technology stack
 - Technical specifications
 
-## 🎨 Design Features
+##  Design Features
 
 ### Visual Design
 - **Dark theme** with space-inspired gradient background
@@ -137,7 +137,7 @@ frontend/
 - Loading spinners
 - Progress bars
 
-## 🔌 API Integration
+##  API Integration
 
 All API calls are handled through `src/services/api.js`:
 
@@ -160,13 +160,13 @@ await apiService.getRanking(top, minScore)
 await apiService.getModelInfo()
 ```
 
-## 📱 Responsive Breakpoints
+##  Responsive Breakpoints
 
 - **Mobile**: < 640px
 - **Tablet**: 640px - 1024px
 - **Desktop**: > 1024px
 
-## 🧪 Testing the Frontend
+##  Testing the Frontend
 
 ### 1. Start Backend Server
 ```bash
@@ -188,7 +188,7 @@ npm run dev
 5. View results
 6. Try Batch and Ranking pages
 
-## 🏗️ Building for Production
+##  Building for Production
 
 ```bash
 # Build
@@ -200,7 +200,7 @@ npm run preview
 
 Build output will be in `dist/` folder.
 
-## 📊 Performance
+##  Performance
 
 - **Fast load times** with Vite
 - **Code splitting** for optimal bundle size
@@ -208,7 +208,7 @@ Build output will be in `dist/` folder.
 - **Optimized images** and assets
 - **Minimal dependencies**
 
-## 🎓 For Mentor Evaluation
+##  For Mentor Evaluation
 
 ### Key Highlights to Show:
 
@@ -234,7 +234,7 @@ Build output will be in `dist/` folder.
    - Download results
    - Complete documentation
 
-## 🚀 Deployment Options
+##  Deployment Options
 
 ### Vercel (Recommended)
 ```bash
@@ -282,16 +282,16 @@ npx kill-port 3000
 npm run dev -- --port 3001
 ```
 
-## 📝 License
+##  License
 
-Part of Infosys Internship Program - ExoHabitAI Project
+ Infosys Internship Program - ExoHabitAI Project
 
-## 👤 Author
+## Author
 
-**Your Name**
+**UJJWAL KUMAR**
 - Internship: Infosys  
 - Project: ExoHabitAI
-- Milestone: 3 (Module 6)
+- Milestone: 3 (Module-6)
 
 ---
 
