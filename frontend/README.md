@@ -13,12 +13,12 @@ Modern and responsive web interface for the ExoHabitAI exoplanet habitability pr
 - **Chart.js** - Data visualization
 - **Lucide React** - Beautiful icons
 
-## 📋 Prerequisites
+##  Prerequisites
 
 - Node.js 16+ and npm
 - Flask backend running on `http://localhost:5000`
 
-## 🛠️ Installation
+##  Installation
 
 ### Step 1: Install Dependencies
 
