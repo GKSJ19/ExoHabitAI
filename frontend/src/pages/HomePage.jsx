@@ -201,7 +201,7 @@ const HomePage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.5, duration: 0.8 }}
           >
-            <Link to="/predict" className="hero-cta">
+            <Link to="/dashboard" className="hero-cta">
               <motion.button 
                 whileHover={{ scale: 1.05, boxShadow: '0 20px 60px rgba(139, 92, 246, 0.4)' }}
                 whileTap={{ scale: 0.98 }}
@@ -210,7 +210,7 @@ const HomePage = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="relative flex items-center gap-3">
                   <Rocket className="w-6 h-6" />
-                  <span>Start Prediction</span>
+                  <span>Open Dashboard</span>
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </div>
               </motion.button>

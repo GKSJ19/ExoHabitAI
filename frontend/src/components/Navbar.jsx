@@ -65,13 +65,13 @@ const Navbar = () => {
 
           {/* CTA Button */}
           <div className="hidden md:block">
-            <Link to="/predict">
+            <Link to="/dashboard">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="px-5 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 text-white shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 transition-shadow"
               >
-                Let's Get Started
+                Dashboard
               </motion.button>
             </Link>
           </div>
@@ -111,12 +111,12 @@ const Navbar = () => {
                 </Link>
               ))}
               <Link
-                to="/predict"
+                to="/dashboard"
                 onClick={() => setIsOpen(false)}
                 className="block mt-4"
               >
                 <button className="w-full px-4 py-2.5 rounded-xl text-sm font-medium bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 text-white">
-                  Let's Get Started
+                  Dashboard
                 </button>
               </Link>
             </div>

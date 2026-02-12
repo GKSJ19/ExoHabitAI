@@ -7,6 +7,7 @@ import PredictPage from './pages/PredictPage'
 import BatchPage from './pages/BatchPage'
 import RankingPage from './pages/RankingPage'
 import AboutPage from './pages/AboutPage'
+import DashboardPage from './pages/DashboardPage'
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/predict" element={<PredictPage />} />
             <Route path="/batch" element={<BatchPage />} />
             <Route path="/ranking" element={<RankingPage />} />
