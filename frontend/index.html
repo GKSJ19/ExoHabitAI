@@ -5,91 +5,248 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ExoHabitAI - Exoplanet Habitability Scanner</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
+    <!-- Animated Background -->
     <div class="stars"></div>
     <div class="stars2"></div>
     <div class="stars3"></div>
+    <div class="shooting-stars"></div>
     
     <div class="container">
+        <!-- Header -->
         <header>
             <div class="logo">
-                <div class="planet-icon"></div>
-                <h1>EXOHABITAI</h1>
+                <div class="planet-icon">
+                    <div class="planet-ring"></div>
+                </div>
+                <div class="logo-text">
+                    <h1>EXOHABITAI</h1>
+                    <div class="scan-line"></div>
+                </div>
             </div>
             <p class="subtitle">EXOPLANET HABITABILITY PREDICTION SYSTEM</p>
+            <div class="status-bar">
+                <span class="status-item"><span class="pulse-dot"></span> SYSTEM ONLINE</span>
+                <span class="status-item"><span class="pulse-dot green"></span> MODEL READY</span>
+                <span class="status-item"><span class="pulse-dot blue"></span> SCANNER ACTIVE</span>
+            </div>
         </header>
 
-        <div class="scanner-panel">
-            <div class="panel-header">
-                <span class="status-indicator"></span>
-                <h2>PLANETARY PARAMETERS</h2>
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- Left Panel - Input -->
+            <div class="scanner-panel">
+                <div class="panel-header">
+                    <span class="status-indicator"></span>
+                    <h2>PLANETARY SCAN PARAMETERS</h2>
+                </div>
+
+                <form id="scanForm">
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label for="pl_rade">
+                                <span class="icon">🌍</span>
+                                Planet Radius
+                                <span class="unit">(Earth radii)</span>
+                            </label>
+                            <input type="number" id="pl_rade" step="0.01" required placeholder="1.0">
+                            <div class="input-indicator"></div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="pl_orbper">
+                                <span class="icon">🔄</span>
+                                Orbital Period
+                                <span class="unit">(days)</span>
+                            </label>
+                            <input type="number" id="pl_orbper" step="0.01" required placeholder="365.25">
+                            <div class="input-indicator"></div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="pl_eqt">
+                                <span class="icon">🌡️</span>
+                                Planet Temperature
+                                <span class="unit">(Kelvin)</span>
+                            </label>
+                            <input type="number" id="pl_eqt" step="0.01" required placeholder="288">
+                            <div class="input-indicator"></div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="st_teff">
+                                <span class="icon">⭐</span>
+                                Star Temperature
+                                <span class="unit">(Kelvin)</span>
+                            </label>
+                            <input type="number" id="st_teff" step="0.01" required placeholder="5778">
+                            <div class="input-indicator"></div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="st_rad">
+                                <span class="icon">☀️</span>
+                                Star Radius
+                                <span class="unit">(Solar radii)</span>
+                            </label>
+                            <input type="number" id="st_rad" step="0.01" required placeholder="1.0">
+                            <div class="input-indicator"></div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="st_mass">
+                                <span class="icon">⚖️</span>
+                                Star Mass
+                                <span class="unit">(Solar masses)</span>
+                            </label>
+                            <input type="number" id="st_mass" step="0.01" required placeholder="1.0">
+                            <div class="input-indicator"></div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Presets -->
+                    <div class="presets">
+                        <p class="presets-label">Quick Presets:</p>
+                        <div class="preset-buttons">
+                            <button type="button" class="preset-btn" data-preset="earth">🌍 Earth</button>
+                            <button type="button" class="preset-btn" data-preset="mars">🔴 Mars-like</button>
+                            <button type="button" class="preset-btn" data-preset="jupiter">🪐 Hot Jupiter</button>
+                            <button type="button" class="preset-btn" data-preset="super">💎 Super-Earth</button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="scan-button" id="scanButton">
+                        <span class="button-glow"></span>
+                        <span class="button-text">
+                            <span class="scan-icon">⚡</span>
+                            INITIATE SCAN
+                        </span>
+                        <span class="button-loader"></span>
+                    </button>
+                </form>
             </div>
 
-            <form id="scanForm">
-                <div class="input-grid">
-                    <div class="input-group">
-                        <label for="pl_rade">Planet Radius (Earth radii)</label>
-                        <input type="number" id="pl_rade" step="0.01" required placeholder="e.g., 1.2">
-                    </div>
+            <!-- Right Panel - Visualization -->
+            <div class="visualization-panel">
+                <div class="panel-header">
+                    <span class="status-indicator pulse"></span>
+                    <h2>ORBITAL SIMULATION</h2>
+                </div>
 
-                    <div class="input-group">
-                        <label for="pl_orbper">Orbital Period (days)</label>
-                        <input type="number" id="pl_orbper" step="0.01" required placeholder="e.g., 365.25">
+                <div class="solar-system" id="solarSystem">
+                    <div class="sun">
+                        <div class="sun-core"></div>
+                        <div class="sun-flare"></div>
                     </div>
-
-                    <div class="input-group">
-                        <label for="pl_eqt">Planet Temperature (K)</label>
-                        <input type="number" id="pl_eqt" step="0.01" required placeholder="e.g., 288">
+                    <div class="orbit-path"></div>
+                    <div class="planet" id="orbitingPlanet">
+                        <div class="planet-atmosphere"></div>
+                        <div class="planet-surface"></div>
                     </div>
-
-                    <div class="input-group">
-                        <label for="st_teff">Star Temperature (K)</label>
-                        <input type="number" id="st_teff" step="0.01" required placeholder="e.g., 5778">
+                    <div class="orbit-info">
+                        <p>Period: <span id="orbitPeriod">--</span> days</p>
+                        <p>Distance: <span id="orbitDistance">--</span> AU</p>
                     </div>
+                </div>
+            </div>
+        </div>
 
-                    <div class="input-group">
-                        <label for="st_rad">Star Radius (Solar radii)</label>
-                        <input type="number" id="st_rad" step="0.01" required placeholder="e.g., 1.0">
+        <!-- Results Section -->
+        <div class="results-section" id="resultsSection">
+            <div class="results-header">
+                <h2>
+                    <span class="icon-scan">🔬</span>
+                    ANALYSIS COMPLETE
+                </h2>
+            </div>
+
+            <div class="results-grid">
+                <!-- Main Result Card -->
+                <div class="result-card main-result">
+                    <div class="result-planet" id="resultPlanet">
+                        <div class="planet-3d">
+                            <div class="planet-layer layer-1"></div>
+                            <div class="planet-layer layer-2"></div>
+                            <div class="planet-layer layer-3"></div>
+                        </div>
                     </div>
-
-                    <div class="input-group">
-                        <label for="st_mass">Star Mass (Solar masses)</label>
-                        <input type="number" id="st_mass" step="0.01" required placeholder="e.g., 1.0">
+                    <div class="result-details">
+                        <div class="probability-display">
+                            <div class="probability-circle">
+                                <svg class="progress-ring" width="200" height="200">
+                                    <circle class="progress-ring-bg" cx="100" cy="100" r="85"></circle>
+                                    <circle class="progress-ring-fill" cx="100" cy="100" r="85" id="progressCircle"></circle>
+                                </svg>
+                                <div class="probability-text">
+                                    <span class="percentage" id="probabilityValue">0</span>
+                                    <span class="label">PROBABILITY</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="status-display">
+                            <div class="status-badge" id="statusBadge">
+                                <span class="badge-icon">●</span>
+                                <span id="statusValue">SCANNING...</span>
+                            </div>
+                            <p class="status-description" id="statusDescription">Analyzing planetary parameters...</p>
+                        </div>
                     </div>
                 </div>
 
-                <button type="submit" class="scan-button" id="scanButton">
-                    <span class="button-text">SCAN PLANET</span>
-                    <span class="button-loader"></span>
-                </button>
-            </form>
-        </div>
+                <!-- Charts Section -->
+                <div class="result-card chart-card">
+                    <h3>📊 Parameter Analysis</h3>
+                    <canvas id="radarChart"></canvas>
+                </div>
 
-        <div class="results-panel" id="resultsPanel">
-            <div class="panel-header">
-                <span class="status-indicator pulse"></span>
-                <h2>ANALYSIS RESULTS</h2>
-            </div>
-            
-            <div class="results-content">
-                <div class="planet-visual" id="planetVisual"></div>
-                
-                <div class="metrics">
-                    <div class="metric-card">
-                        <div class="metric-label">HABITABILITY PROBABILITY</div>
-                        <div class="metric-value" id="probabilityValue">--</div>
+                <div class="result-card chart-card">
+                    <h3>📈 Habitability Factors</h3>
+                    <canvas id="barChart"></canvas>
+                </div>
+
+                <!-- Info Cards -->
+                <div class="result-card info-card">
+                    <div class="info-icon">🌡️</div>
+                    <div class="info-content">
+                        <h4>Temperature Zone</h4>
+                        <p id="tempZone">--</p>
                     </div>
-                    
-                    <div class="metric-card status-card">
-                        <div class="metric-label">PLANET STATUS</div>
-                        <div class="metric-value status-text" id="statusValue">AWAITING SCAN</div>
+                </div>
+
+                <div class="result-card info-card">
+                    <div class="info-icon">📏</div>
+                    <div class="info-content">
+                        <h4>Planet Type</h4>
+                        <p id="planetType">--</p>
+                    </div>
+                </div>
+
+                <div class="result-card info-card">
+                    <div class="info-icon">⭐</div>
+                    <div class="info-content">
+                        <h4>Star Class</h4>
+                        <p id="starClass">--</p>
+                    </div>
+                </div>
+
+                <div class="result-card info-card">
+                    <div class="info-icon">🎯</div>
+                    <div class="info-content">
+                        <h4>Habitability Index</h4>
+                        <p id="habitIndex">--</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>ExoHabitAI v2.0 | Powered by Machine Learning | NASA-inspired Design</p>
+    </footer>
 
     <script src="script.js"></script>
 </body>
