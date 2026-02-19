@@ -104,7 +104,8 @@ export async function predictFromAPI(
   stellar: StellarParams
 ): Promise<PredictionResult> {
   const API_URL =
-    import.meta.env.VITE_API_URL || "http://127.0.0.1:5000";
+  import.meta.env.VITE_API_URL ||
+  "https://exohabitai-ux25.onrender.com";
 
   const payload = {
     Radius: planet.planetRadius,
