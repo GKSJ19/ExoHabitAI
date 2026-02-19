@@ -5,6 +5,7 @@ seaborn
 scikit-learn
 xgboost
 flask
+flask-cors
 joblib
 requests
 plotly
