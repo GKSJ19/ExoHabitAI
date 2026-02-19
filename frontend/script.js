@@ -464,7 +464,7 @@ form.addEventListener('submit', async (e) => {
     };
 
     try {
-        const resp = await fetch('http://127.0.0.1:5000/predict', {
+        const resp = await fetch('/predict', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
