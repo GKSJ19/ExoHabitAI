@@ -61,8 +61,11 @@ def predict():
         X = np.array([feature_vector])
 
         # Prediction
-        prediction = int(model.predict(X)[0])
-        probability = float(model.predict_proba(X)[0][1])
+        model_instance = get_model()
+
+prediction = int(model_instance.predict(X)[0])
+probability = float(model_instance.predict_proba(X)[0][1])
+
 
         # Convert to readable text
         result_text = "Habitable" if prediction == 1 else "Not Habitable"
@@ -84,6 +87,7 @@ def predict():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
+
 
 
 
