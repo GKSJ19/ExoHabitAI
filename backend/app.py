@@ -1,8 +1,8 @@
+import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib
 import numpy as np
-import os
 from utils import validate_input
 
 app = Flask(__name__)
@@ -30,7 +30,6 @@ def home():
 def predict():
     try:
         data = request.get_json(force=True)
-
         valid, error = validate_input(data, FEATURES)
         if not valid:
             return jsonify({"status": "error", "message": error}), 400
@@ -40,7 +39,6 @@ def predict():
 
         prediction_raw = int(model.predict(X)[0])
         probability = float(model.predict_proba(X)[0][1])
-
         label = "Habitable" if prediction_raw == 1 else "Not Habitable"
 
         return jsonify({
@@ -52,7 +50,9 @@ def predict():
         return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
+
 
 
 
