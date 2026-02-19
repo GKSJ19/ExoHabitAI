@@ -9,3 +9,5 @@ joblib
 requests
 plotly
 gunicorn
+Flask==3.0.0
+flask-cors==4.0.0
