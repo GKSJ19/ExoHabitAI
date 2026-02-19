@@ -1,17 +1,21 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from backend.utils import predict_habitability
 import pandas as pd
+import os
 
-app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+app = Flask(
+    __name__,
+    static_folder="../frontend",
+    static_url_path=""
+)
+
+CORS(app)
 
 
 @app.route("/", methods=["GET"])
 def home():
-    return jsonify({
-        "message": "ExoHabitAI Backend is running"
-    })
+    return send_from_directory(app.static_folder, "index.html")
 
 
 @app.route("/predict", methods=["POST"])
@@ -23,8 +27,11 @@ def predict():
 
         result = predict_habitability(data)
         
-        # Convert 0/1 to Habitable/Not Habitable
-        habitability_label = "Habitable" if result["prediction"] == 1 else "Not Habitable"
+        habitability_label = (
+            "Habitable"
+            if result["prediction"] == 1
+            else "Not Habitable"
+        )
 
         return jsonify({
             "status": "success",
@@ -35,16 +42,12 @@ def predict():
         })
 
     except ValueError as e:
-        print(f"Validation Error: {str(e)}")
         return jsonify({
             "status": "error",
             "message": str(e)
         }), 400
 
     except Exception as e:
-        print(f"Unexpected Error: {str(e)}")
-        import traceback
-        traceback.print_exc()
         return jsonify({
             "status": "error",
             "message": "Internal server error: " + str(e)
@@ -61,7 +64,7 @@ def rank():
 
         df = pd.DataFrame(data)
 
-        from utils import model, FEATURE_COLUMNS
+        from backend.utils import model, FEATURE_COLUMNS
 
         df_model = df[FEATURE_COLUMNS]
         df["habitability_probability"] = model.predict_proba(df_model)[:, 1]
