@@ -16,8 +16,13 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "models", "random_forest.pkl")
 
-model = joblib.load("../models/random_forest.pkl")
+model = None
 
+def get_model():
+    global model
+    if model is None:
+        model = joblib.load("../models/random_forest.pkl")
+    return model
 # ------------------ FEATURES ------------------
 FEATURES = [
     "pl_rade","pl_masse","pl_orbper","pl_orbsmax",
@@ -79,6 +84,7 @@ def predict():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
+
 
 
 
