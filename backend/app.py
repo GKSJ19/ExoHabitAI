@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib
 import numpy as np
-from utils import validate_input
+from backend.utils import validate_input
 
 app = Flask(__name__)
 CORS(app)
@@ -56,5 +56,6 @@ def predict():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
+
 
 
