@@ -3,12 +3,16 @@ from flask_cors import CORS
 import joblib
 import numpy as np
 from backend.utils import validate_input
+import os
 
 app = Flask(__name__)
 CORS(app)
 
 # Load model
-model = joblib.load("../models/random_forest.pkl")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, "..", "models", "random_forest.pkl")
+
+model = joblib.load(MODEL_PATH)
 
 FEATURES = [
 "pl_rade","pl_masse","pl_orbper","pl_orbsmax",
@@ -56,6 +60,7 @@ def predict():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
+
 
 
 
