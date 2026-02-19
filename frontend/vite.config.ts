@@ -9,10 +9,8 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  server: {
-    proxy: {
-      "/predict": "http://localhost:5000",
-    },
+  build: {
+    outDir: "dist",
   },
 });
 
