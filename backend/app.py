@@ -8,7 +8,8 @@ app = Flask(__name__)
 CORS(app)
 
 # Use relative path (IMPORTANT for deployment)
-MODEL_PATH = r"D:\Downloads\random_forest(1).pkl"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, "..", "models", "random_forest(1).pkl")
 
 # Load model once
 if os.path.exists(MODEL_PATH):
