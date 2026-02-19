@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib
 import os
-from utils import preprocess_input, validate_input
+from backend.utils import preprocess_input, validate_input
 
 app = Flask(__name__)
 CORS(app)
