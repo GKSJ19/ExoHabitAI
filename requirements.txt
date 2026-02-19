@@ -9,3 +9,5 @@ joblib
 requests
 plotly
 gunicorn
+flask-cors
+
