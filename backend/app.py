@@ -6,7 +6,7 @@ from backend.utils import validate_input
 import os
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "https://exohabitai-frontend.onrender.com"}})
 
 # Load model
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -60,6 +60,7 @@ def predict():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
+
 
 
 
