@@ -16,29 +16,21 @@ const inputFields = [
 ];
 
 const Predict = () => {
-
-  // Render backend URL
-  const API_URL = import.meta.env.VITE_API_URL || "https://exohabitai-jynx.onrender.com";
-
   const [values, setValues] = useState<Record<string, string>>({
     pl_rade: "",
     pl_masse: "",
     pl_orbper: "",
     st_teff: "",
   });
-
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<PredictionResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     setLoading(true);
     setResult(null);
     setError(null);
-
-    console.log("Connecting to:", API_URL);
 
     const payload = {
       pl_rade: parseFloat(values.pl_rade),
@@ -65,41 +57,19 @@ const Predict = () => {
     };
 
     try {
-      const controller = new AbortController();
-
-      // Timeout protection (Render cold start)
-      const timeout = setTimeout(() => {
-        controller.abort();
-      }, 60000);
-
-      const res = await fetch(`https://exohabitai-jynx.onrender.com/predict`, {
+      const res = await fetch("http://localhost:5000/predict", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-        signal: controller.signal
       });
-
-      clearTimeout(timeout);
-
-      if (!res.ok) {
-        throw new Error("Server not responding");
-      }
-
+      if (!res.ok) throw new Error("Server error");
       const data = await res.json();
-
       setResult({
         prediction: data.prediction,
         habitability_score: data.habitability_score,
       });
-
-    } catch (err: any) {
-
-      console.error(err);
-
-      setError(
-        "The prediction server is waking up (Render free server sleeps). Please wait 30–40 seconds and click Predict again."
-      );
-
+    } catch {
+      setError("Unable to connect. Make sure the backend is running: python backend/app.py");
     } finally {
       setLoading(false);
     }
@@ -108,7 +78,6 @@ const Predict = () => {
   const isHabitable =
     result?.prediction?.toLowerCase().includes("habitable") &&
     !result?.prediction?.toLowerCase().includes("not");
-
   const score = result ? Math.round(result.habitability_score * 100) : 0;
 
   return (
@@ -131,26 +100,20 @@ const Predict = () => {
                 <div key={field.key}>
                   <label className="block text-sm font-medium text-foreground mb-1.5">
                     {field.label}
-                    <span className="text-muted-foreground text-xs ml-1">
-                      ({field.unit})
-                    </span>
+                    <span className="text-muted-foreground text-xs ml-1">({field.unit})</span>
                   </label>
-
                   <input
                     type="number"
                     step="any"
                     required
                     placeholder={field.placeholder}
                     value={values[field.key]}
-                    onChange={(e) =>
-                      setValues({ ...values, [field.key]: e.target.value })
-                    }
+                    onChange={(e) => setValues({ ...values, [field.key]: e.target.value })}
                     className="w-full px-4 py-2.5 rounded-lg bg-muted/50 border border-border/60 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 font-mono-data text-sm transition-all"
                   />
                 </div>
               ))}
             </div>
-
             <button
               type="submit"
               disabled={loading}
@@ -159,7 +122,7 @@ const Predict = () => {
               {loading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Contacting AI model...
+                  Analyzing...
                 </>
               ) : (
                 "Predict Habitability"
@@ -167,9 +130,16 @@ const Predict = () => {
             </button>
           </form>
 
+          {loading && (
+            <div className="flex flex-col items-center gap-4 py-8">
+              <div className="w-20 h-20 rounded-full border-4 border-primary/30 border-t-primary animate-spin" />
+              <p className="text-muted-foreground text-sm">Processing planetary data...</p>
+            </div>
+          )}
+
           {error && (
             <div className="glass-panel border-destructive/50 p-6 text-center">
-              <p className="text-destructive font-medium mb-1">Server Waking Up</p>
+              <p className="text-destructive font-medium mb-1">Connection Error</p>
               <p className="text-muted-foreground text-sm">{error}</p>
             </div>
           )}
@@ -179,6 +149,11 @@ const Predict = () => {
               className={`glass-panel p-8 text-center border ${
                 isHabitable ? "border-green-500/40" : "border-red-500/40"
               }`}
+              style={{
+                boxShadow: isHabitable
+                  ? "0 0 40px hsl(150 80% 45% / 0.15)"
+                  : "0 0 40px hsl(0 72% 51% / 0.15)",
+              }}
             >
               <div
                 className={`inline-block px-6 py-2 rounded-full text-sm font-display font-bold tracking-wider mb-4 ${
@@ -196,9 +171,23 @@ const Predict = () => {
                   : "This planet is unlikely to support life."}
               </h3>
 
-              <div className="text-3xl font-bold text-foreground">
-                Confidence: {score}%
+              <div className="relative w-32 h-32 mx-auto mb-4">
+                <svg viewBox="0 0 120 120" className="w-full h-full -rotate-90">
+                  <circle cx="60" cy="60" r="52" fill="none" stroke="hsl(var(--muted))" strokeWidth="8" />
+                  <circle
+                    cx="60" cy="60" r="52" fill="none"
+                    stroke={isHabitable ? "hsl(150, 80%, 45%)" : "hsl(0, 72%, 51%)"}
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                    strokeDasharray={`${score * 3.27} 327`}
+                    className="transition-all duration-1000"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="font-mono-data text-2xl font-bold text-foreground">{score}%</span>
+                </div>
               </div>
+              <p className="text-muted-foreground text-sm">Confidence Score</p>
             </div>
           )}
         </div>
