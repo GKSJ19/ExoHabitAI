@@ -5,12 +5,14 @@ services:
     region: oregon
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn wsgi:app
+    startCommand: gunicorn wsgi:app --bind 0.0.0.0:8000
     envVars:
       - key: PYTHON_VERSION
         value: 3.11
       - key: FLASK_ENV
         value: production
+      - key: PYTHONPATH
+        value: /opt/render/project/src
 
   - type: static
     name: exohabitai-frontend
