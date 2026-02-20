@@ -1,0 +1,176 @@
+!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ExoHabitAI - Exoplanet Habitability Prediction</title>
+  <link rel="stylesheet" href="style2.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <!-- Hero Section -->
+  <header class="hero-section text-center">
+    <div class="hero-overlay"></div>
+    <div class="container hero-content">
+      <span class="badge-pill"><span class="pulse-dot"></span> AI-Powered Exoplanet Analysis</span>
+      <h1 class="hero-title"><span class="gradient-text">ExoHabit</span>AI</h1>
+      <p class="hero-subtitle">
+        Predict the habitability of exoplanets using advanced machine learning.
+        Input planetary and stellar parameters to discover worlds that could harbor life.
+      </p>
+      <a href="#predict" class="btn-glow">Start Prediction ↓</a>
+    </div>
+  </header>
+  <!-- Main Content -->
+  <main class="container main-content" id="predict">
+    <!-- Error Alert -->
+    <div class="alert alert-danger alert-dismissible d-none" id="errorAlert" role="alert">
+      <strong>Error:</strong> <span id="errorMessage"></span>
+      <button type="button" class="btn-close" onclick="dismissError()"></button>
+    </div>
+    <!-- Prediction Form -->
+    <form id="predictionForm" onsubmit="return false;">
+      <!-- Planetary Parameters -->
+      <div class="card-cosmic">
+        <div class="card-header-cosmic">
+          <div class="card-icon card-icon-primary">🪐</div>
+          <div>
+            <h2 class="card-title">Planetary Parameters</h2>
+            <p class="card-subtitle">Physical properties of the exoplanet</p>
+          </div>
+        </div>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label for="planetaryMass" class="form-label">Planetary Mass <span class="unit">(Earth masses)</span></label>
+            <input type="text" class="form-control custom-input" id="planetaryMass" placeholder="e.g., 1.0" required />
+            <div class="invalid-feedback" id="planetaryMass-error"></div>
+          </div>
+          <div class="col-md-4">
+            <label for="planetaryRadius" class="form-label">Planetary Radius <span class="unit">(Earth radii)</span></label>
+            <input type="text" class="form-control custom-input" id="planetaryRadius" placeholder="e.g., 1.0" required />
+            <div class="invalid-feedback" id="planetaryRadius-error"></div>
+          </div>
+          <div class="col-md-4">
+            <label for="orbitalPeriod" class="form-label">Orbital Period <span class="unit">(days)</span></label>
+            <input type="text" class="form-control custom-input" id="orbitalPeriod" placeholder="e.g., 365.25" required />
+            <div class="invalid-feedback" id="orbitalPeriod-error"></div>
+          </div>
+          <div class="col-md-4">
+            <label for="semiMajorAxis" class="form-label">Semi-Major Axis <span class="unit">(AU)</span></label>
+            <input type="text" class="form-control custom-input" id="semiMajorAxis" placeholder="e.g., 1.0" required />
+            <div class="invalid-feedback" id="semiMajorAxis-error"></div>
+          </div>
+          <div class="col-md-4">
+            <label for="eccentricity" class="form-label">Eccentricity <span class="unit">(0–1)</span></label>
+            <input type="text" class="form-control custom-input" id="eccentricity" placeholder="e.g., 0.017" required />
+            <div class="invalid-feedback" id="eccentricity-error"></div>
+          </div>
+          <div class="col-md-4">
+            <label for="equilibriumTemperature" class="form-label">Equilibrium Temp <span class="unit">(K)</span></label>
+            <input type="text" class="form-control custom-input" id="equilibriumTemperature" placeholder="e.g., 255" required />
+            <div class="invalid-feedback" id="equilibriumTemperature-error"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Stellar Parameters -->
+      <div class="card-cosmic">
+        <div class="card-header-cosmic">
+          <div class="card-icon card-icon-secondary">⭐</div>
+          <div>
+            <h2 class="card-title">Stellar Parameters</h2>
+            <p class="card-subtitle">Properties of the host star</p>
+          </div>
+        </div>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label for="stellarMass" class="form-label">Stellar Mass <span class="unit">(Solar masses)</span></label>
+            <input type="text" class="form-control custom-input" id="stellarMass" placeholder="e.g., 1.0" required />
+            <div class="invalid-feedback" id="stellarMass-error"></div>
+          </div>
+          <div class="col-md-4">
+            <label for="stellarRadius" class="form-label">Stellar Radius <span class="unit">(Solar radii)</span></label>
+            <input type="text" class="form-control custom-input" id="stellarRadius" placeholder="e.g., 1.0" required />
+            <div class="invalid-feedback" id="stellarRadius-error"></div>
+          </div>
+          <div class="col-md-4">
+            <label for="stellarTemperature" class="form-label">Stellar Temp <span class="unit">(K)</span></label>
+            <input type="text" class="form-control custom-input" id="stellarTemperature" placeholder="e.g., 5778" required />
+            <div class="invalid-feedback" id="stellarTemperature-error"></div>
+          </div>
+          <div class="col-md-4">
+            <label for="stellarLuminosity" class="form-label">Stellar Luminosity <span class="unit">(Solar)</span></label>
+            <input type="text" class="form-control custom-input" id="stellarLuminosity" placeholder="e.g., 1.0" required />
+            <div class="invalid-feedback" id="stellarLuminosity-error"></div>
+          </div>
+          <div class="col-md-4">
+            <label for="stellarMetallicity" class="form-label">Metallicity <span class="unit">([Fe/H])</span></label>
+            <input type="text" class="form-control custom-input" id="stellarMetallicity" placeholder="e.g., 0.0" required />
+            <div class="invalid-feedback" id="stellarMetallicity-error"></div>
+          </div>
+          <div class="col-md-4">
+            <label for="stellarAge" class="form-label">Stellar Age <span class="unit">(Gyr)</span></label>
+            <input type="text" class="form-control custom-input" id="stellarAge" placeholder="e.g., 4.6" required />
+            <div class="invalid-feedback" id="stellarAge-error"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Submit Button -->
+      <div class="text-center mt-4 mb-5">
+        <button type="button" class="btn-glow btn-lg" id="predictBtn" onclick="handlePredict()">
+          🚀 Predict Habitability
+        </button>
+      </div>
+    </form>
+    <!-- Loading Spinner -->
+    <div class="text-center d-none" id="loadingSpinner">
+      <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-3 text-muted-custom">Analyzing exoplanet data...</p>
+    </div>
+    <!-- Results Section -->
+    <div class="card-cosmic d-none" id="resultsSection">
+      <div class="card-header-cosmic">
+        <div class="card-icon card-icon-accent">📊</div>
+        <h2 class="card-title">Prediction Results</h2>
+      </div>
+      <div class="row g-4">
+        <!-- Status Card -->
+        <div class="col-md-6">
+          <div class="result-card" id="statusCard">
+            <div class="result-icon" id="statusIcon"></div>
+            <p class="result-label">Habitability Status</p>
+            <p class="result-value" id="statusValue"></p>
+          </div>
+        </div>
+        <!-- Score Card -->
+        <div class="col-md-6">
+          <div class="result-card result-card-score">
+            <p class="result-label">Habitability Score</p>
+            <div class="score-ring-container">
+              <svg class="score-ring" viewBox="0 0 36 36">
+                <path class="score-ring-bg"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                <path class="score-ring-fill" id="scoreRing"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  stroke-dasharray="0, 100" />
+              </svg>
+              <span class="score-text" id="scoreText">0%</span>
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" id="scoreBar"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <!-- Footer -->
+  <footer class="footer-section">
+    <p>ExoHabitAI — AI-Powered Exoplanet Habitability Prediction</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="script2.js"></script>
+</body>
+</html>
