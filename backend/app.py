@@ -7,7 +7,7 @@ import pandas as pd
 import os
 
 
-from utils import validate_input, format_prediction
+from backend.utils import validate_input, format_prediction
 
 app = Flask(__name__)
 CORS(app)
@@ -281,5 +281,6 @@ def download_predicted():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
+
 
 
