@@ -1,0 +1,12 @@
+body {
+    background-color: #5384cd;
+}
+
+h2 {
+    color: #2c3e50;
+}
+
+#result {
+    font-size: 18px;
+    font-weight: bold;
+}
