@@ -4,7 +4,8 @@ from flask_cors import CORS
 import numpy as np
 import pandas as pd
 import os
-from utils import load_model
+from backend.utils import load_model
+
 
 
 
