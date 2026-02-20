@@ -1,0 +1,55 @@
+body {
+  background: linear-gradient(135deg, #0a1a2f, #0d2a4d);
+  color: #e6ecf3;
+  font-family: "Segoe UI", sans-serif;
+}
+
+h1 {
+  color: #8fd3ff;
+}
+
+.card {
+  background-color: #122844;
+  border-radius: 16px;
+  border: none;
+}
+
+.form-control,
+.form-select {
+  background-color: #0e223a;
+  color: #ffffff;
+  border: 1px solid #1e3a5f;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #4dabf7;
+  box-shadow: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #1c7ed6, #4dabf7);
+  border: none;
+}
+
+/* Base result card */
+#result .card {
+  background-color: #10253f;
+  border-radius: 12px;
+  transition: 0.3s ease;
+  font-weight: 600;
+}
+
+/* Habitable style */
+#result.habitable .card {
+  border-left: 6px solid #00ffcc;
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.4);
+  color: #00ffcc;
+}
+
+/* Not Habitable style */
+#result.not-habitable .card {
+  border-left: 6px solid #ff4d4d;
+  box-shadow: 0 0 20px rgba(255, 77, 77, 0.4);
+  color: #ff4d4d;
+}
