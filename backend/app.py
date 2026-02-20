@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from utils import predict_habitability
+from .utils import predict_habitability
 import pandas as pd
 import os
 
