@@ -206,7 +206,7 @@ const BatchVisualization = ({ results, onDownload }) => {
         className="glass-card p-6"
       >
         <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-primary-400" />
+          <TrendingUp className="w-5 h-5 text-scientific" />
           Top 10 Most Confident Predictions
         </h3>
         <div style={{ height: '300px' }}>
@@ -237,7 +237,7 @@ const BatchVisualization = ({ results, onDownload }) => {
           </div>
           <button
             onClick={onDownload}
-            className="flex items-center gap-2 px-4 py-2 bg-primary-500/20 hover:bg-primary-500/30 rounded-lg transition-all text-primary-400"
+            className="flex items-center gap-2 px-4 py-2 bg-scientific/20 hover:bg-scientific/30 rounded-lg transition-all text-scientific"
           >
             <Download className="w-4 h-4" />
             Download Results
@@ -247,11 +247,11 @@ const BatchVisualization = ({ results, onDownload }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
           <div>
             <label className="block text-xs text-white/60 mb-1">Search Planet</label>
-            <input
+              <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="e.g., Planet_162"
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary-400/40"
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-scientific/40"
             />
           </div>
           <div>
@@ -259,7 +259,7 @@ const BatchVisualization = ({ results, onDownload }) => {
             <select
               value={filterPrediction}
               onChange={(e) => setFilterPrediction(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary-400/40"
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-scientific/40"
             >
               <option value="all">All</option>
               <option value="Habitable">Habitable</option>
@@ -268,13 +268,13 @@ const BatchVisualization = ({ results, onDownload }) => {
           </div>
           <div>
             <label className="block text-xs text-white/60 mb-1">Min Confidence %</label>
-            <input
+              <input
               type="number"
               min="0"
               max="100"
               value={minConfidence}
               onChange={(e) => setMinConfidence(Number(e.target.value))}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary-400/40"
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-scientific/40"
             />
           </div>
           <div>
@@ -282,7 +282,7 @@ const BatchVisualization = ({ results, onDownload }) => {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary-400/40"
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-scientific/40"
             >
               <option value="confidence">Confidence</option>
               <option value="name">Planet Name</option>
@@ -294,7 +294,7 @@ const BatchVisualization = ({ results, onDownload }) => {
             <select
               value={sortDir}
               onChange={(e) => setSortDir(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary-400/40"
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-scientific/40"
             >
               <option value="desc">High → Low</option>
               <option value="asc">Low → High</option>
@@ -316,7 +316,7 @@ const BatchVisualization = ({ results, onDownload }) => {
               {sortedPredictions.map((result, idx) => (
                 <tr key={idx} className="border-t border-white/5 hover:bg-white/5 transition">
                   <td className="p-3 text-white/60">{idx + 1}</td>
-                  <td className="p-3 text-primary-400 font-medium truncate">{result.planet_id || `Planet ${idx + 1}`}</td>
+                  <td className="p-3 text-scientific font-medium truncate">{result.planet_id || `Planet ${idx + 1}`}</td>
                   <td className="p-3 text-center">
                     <span className={`px-3 py-1 rounded-full text-xs font-bold ${
                       result.prediction_result === 'Habitable'
@@ -330,7 +330,7 @@ const BatchVisualization = ({ results, onDownload }) => {
                     <div className="flex items-center justify-end gap-2">
                       <div className="w-20 bg-white/10 rounded-full h-2">
                         <div
-                          className="h-full bg-gradient-to-r from-primary-500 to-primary-400 rounded-full"
+                          className="h-full bg-gradient-to-r from-scientific to-teal rounded-full"
                           style={{ width: `${result.confidence_score * 100}%` }}
                         />
                       </div>

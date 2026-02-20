@@ -1,0 +1,56 @@
+import json
+import urllib.request
+
+url = 'http://127.0.0.1:5000/predict'
+# Example input based on generate_example_input()
+payload = {
+    'pl_dens': -0.0479123235603631,
+    'pl_bmasse': 1.9605210979486356,
+    'pl_ratdor': -0.2377153667854853,
+    'st_logg': -0.3338401106267973,
+    'st_dens': -0.014134493077225,
+    'pl_rvamp': 0.7662883685938816,
+    'st_lum': 0.2962708708810992,
+    'sy_bmag': 0.5589383179631265,
+    'pl_ratror': 0.0663162126307991,
+    'pl_orbincl': -0.1797876623662277,
+    'st_met': 1.4038614217536152,
+    'st_mass': 0.9303239988613824,
+    'pl_trandep': -0.0119911003527919,
+    'st_rad': 0.9484923508057548,
+    'pl_orbper': -0.0230479712726176,
+    'dec': 0.6336760149478631,
+    'pl_imppar': 0.0472226166416694,
+    'glat': 0.1460314110179414,
+    'pl_trandur': -0.1718501628939176,
+    'pl_tranmid': -0.5775514899492832,
+    'sy_pmra': -0.0152668455026976,
+    'sy_w4mag': 0.2692162812500556,
+    'st_age': -0.1512528293251527,
+    'sy_pm': -0.2281500377696284,
+    'rowid': 0.6221396985957474,
+    'pl_orbsmax': -0.352608826602341,
+    'sy_pmdec': 0.0598509644369646,
+    'glon': -0.5759519906344511,
+    'ra': 0.6287115997623113,
+    'elon': 0.6796302483648,
+    'rv_flag': 1.323209841632241,
+    'st_teff': 0.7791822470736846,
+    'pl_nnotes': 0.119858632909846,
+    'sy_plx': -0.2986127438364163,
+    'pl_ntranspec': -0.1117744925714188,
+    'pl_orblper': -0.1962730692204141,
+    'tran_flag': 0.508367343094277,
+    'pl_insol.1': -0.2163941348824767,
+    'pl_orbeccen.1': 0.5842608780254737,
+    'pl_name': 'Test-Planet-01'
+}
+
+data = json.dumps(payload).encode('utf-8')
+req = urllib.request.Request(url, data=data, headers={'Content-Type': 'application/json'})
+try:
+    with urllib.request.urlopen(req) as resp:
+        print(resp.read().decode('utf-8'))
+except urllib.error.HTTPError as e:
+    body = e.read().decode('utf-8')
+    print(f'HTTP {e.code}: {body}')

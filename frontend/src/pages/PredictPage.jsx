@@ -63,7 +63,7 @@ const PredictPage = () => {
     {
       title: 'Planetary Parameters',
       icon: <Globe className="w-5 h-5" />,
-      color: 'from-purple-500/20 to-pink-500/20',
+      color: 'from-scientific/20 to-teal/20',
       features: [
         { key: 'pl_dens', label: 'Planet Density (g/cm³)' },
         { key: 'pl_bmasse', label: 'Planet Mass (Earth masses)' },
@@ -87,7 +87,7 @@ const PredictPage = () => {
     {
       title: 'Stellar Parameters',
       icon: <Star className="w-5 h-5" />,
-      color: 'from-cyan-500/20 to-blue-500/20',
+      color: 'from-teal/20 to-scientific/20',
       features: [
         { key: 'st_teff', label: 'Stellar Temperature (K)' },
         { key: 'st_mass', label: 'Stellar Mass (Solar masses)' },
@@ -233,11 +233,11 @@ const PredictPage = () => {
               <span className="text-sm text-white/70">Single Planet Analysis</span>
             </motion.div>
             
-            <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-white via-purple-200 to-cyan-200 bg-clip-text text-transparent">
-                Habitability Prediction
-              </span>
-            </h1>
+                  <h1 className="text-5xl md:text-6xl font-bold mb-6">
+                    <span className="bg-gradient-to-r from-white via-scientific to-teal bg-clip-text text-transparent">
+                      Habitability Prediction
+                    </span>
+                  </h1>
             <p className="text-xl text-white/60 max-w-2xl mx-auto">
               Enter exoplanet parameters to analyze habitability potential using our advanced AI model
             </p>
@@ -262,13 +262,13 @@ const PredictPage = () => {
                     name="pl_name"
                     value={formData.pl_name}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
+                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-scientific/50 focus:border-scientific/50 transition-all"
                     placeholder="Enter planet name"
                   />
                 </motion.div>
 
                 {/* Feature Groups */}
-                {featureGroups.map((group, idx) => (
+                  {featureGroups.map((group, idx) => (
                   <motion.div
                     key={idx}
                     initial={{ opacity: 0, y: 20 }}
@@ -288,13 +288,13 @@ const PredictPage = () => {
                           <label className="block text-xs font-medium text-white/50 mb-2">
                             {feature.label}
                           </label>
-                          <input
+                            <input
                             type="number"
                             step="any"
                             name={feature.key}
                             value={formData[feature.key]}
                             onChange={handleChange}
-                            className="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all text-sm"
+                            className="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-scientific/50 focus:border-scientific/50 transition-all text-sm"
                             placeholder="0.0"
                             required
                           />
@@ -316,7 +316,7 @@ const PredictPage = () => {
                     disabled={loading}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="flex-1 px-6 py-4 rounded-xl bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 text-white font-semibold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-500/25"
+                    className="flex-1 px-6 py-4 rounded-xl bg-gradient-to-r from-scientific via-teal to-scientific text-white font-semibold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-scientific/25"
                   >
                     {loading ? (
                       <>
@@ -382,11 +382,11 @@ const PredictPage = () => {
                             initial={{ width: 0 }}
                             animate={{ width: `${result.confidence_score * 100}%` }}
                             transition={{ duration: 1, delay: 0.3 }}
-                            className="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 rounded-full"
+                            className="h-full bg-gradient-to-r from-scientific via-teal to-scientific rounded-full"
                           />
                         </div>
                         <div className="mt-2 text-center">
-                          <span className="text-3xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
+                          <span className="text-3xl font-bold bg-gradient-to-r from-clean to-scientific bg-clip-text text-transparent">
                             {(result.confidence_score * 100).toFixed(2)}%
                           </span>
                         </div>
@@ -411,15 +411,15 @@ const PredictPage = () => {
                     </div>
                   </motion.div>
                 ) : (
-                  <motion.div
+                    <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5 }}
                     className="p-8 rounded-3xl bg-white/5 backdrop-blur-sm border border-white/10 text-center"
                   >
                     <div className="relative inline-block mb-6">
-                      <div className="absolute inset-0 bg-purple-500/20 rounded-full blur-xl" />
-                      <Sparkles className="relative w-16 h-16 text-purple-400" />
+                      <div className="absolute inset-0 bg-scientific/20 rounded-full blur-xl" />
+                      <Sparkles className="relative w-16 h-16 text-scientific" />
                     </div>
                     <p className="text-white/50">
                       Fill in the exoplanet parameters and click "Predict" to analyze habitability potential

@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: exohabitai-backend
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn wsgi:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
+      - key: FLASK_ENV
+        value: production
+
+  - type: static
+    name: exohabitai-frontend
+    env: static
+    region: oregon
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: ./frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        value: ${exohabitai-backend.url}

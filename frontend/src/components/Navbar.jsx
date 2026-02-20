@@ -19,7 +19,8 @@ const Navbar = () => {
   const navLinks = [
     { path: '/', label: 'Intro' },
     { path: '/about', label: 'About' },
-    { path: '/batch', label: 'Batch' },
+    { path: '/dashboard', label: 'Dashboard' },
+    { path: '/batch', label: 'Upload' },
     { path: '/ranking', label: 'Ranking' },
     { path: '/predict', label: 'Predict' },
   ]
@@ -32,7 +33,7 @@ const Navbar = () => {
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
       className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ${
-        scrolled ? 'w-[95%] max-w-6xl' : 'w-auto'
+        scrolled ? 'w-[95%] max-w-6xl' : 'w-auto px-8'
       }`}
     >
       <div className={`glass-card rounded-full px-6 py-3 border border-white/10 ${
@@ -42,7 +43,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 group">
             <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-white group-hover:text-primary-300 transition-colors" />
+              <Sparkles className="w-5 h-5 text-white group-hover:text-scientific transition-colors" />
             </div>
           </Link>
 
@@ -63,18 +64,8 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* CTA Button */}
-          <div className="hidden md:block">
-            <Link to="/predict">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-5 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 text-white shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 transition-shadow"
-              >
-                Let's Get Started
-              </motion.button>
-            </Link>
-          </div>
+          {/* (CTA removed) */}
+          <div className="hidden md:block" />
 
           {/* Mobile menu button */}
           <button
@@ -110,15 +101,7 @@ const Navbar = () => {
                   {link.label}
                 </Link>
               ))}
-              <Link
-                to="/predict"
-                onClick={() => setIsOpen(false)}
-                className="block mt-4"
-              >
-                <button className="w-full px-4 py-2.5 rounded-xl text-sm font-medium bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 text-white">
-                  Let's Get Started
-                </button>
-              </Link>
+              {/* mobile CTA removed */}
             </div>
           </motion.div>
         )}

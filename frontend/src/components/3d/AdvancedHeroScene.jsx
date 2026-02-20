@@ -41,18 +41,18 @@ const BlackHole = ({ mousePosition, scrollY }) => {
       <mesh>
         <sphereGeometry args={[1.65, 64, 64]} />
         <meshBasicMaterial 
-          color="#8b5cf6" 
+          color="#2563EB" 
           transparent 
           opacity={0.4}
           side={THREE.BackSide}
         />
       </mesh>
 
-      {/* Inner Glow Pulsating */}
+      {/* Inner Glow Pulsating (scientific tint) */}
       <mesh>
         <sphereGeometry args={[1.8, 64, 64]} />
         <meshBasicMaterial 
-          color="#a855f7" 
+          color="#2563EB" 
           transparent 
           opacity={0.2}
           side={THREE.DoubleSide}
@@ -64,8 +64,8 @@ const BlackHole = ({ mousePosition, scrollY }) => {
         <mesh key={i} ref={ringRefs[i]} rotation={[Math.PI / 2, 0, 0]}>
           <torusGeometry args={[radius, 0.15 + i * 0.05, 16, 100]} />
           <meshStandardMaterial
-            color={i === 0 ? '#06b6d4' : i === 1 ? '#8b5cf6' : '#6366f1'}
-            emissive={i === 0 ? '#06b6d4' : i === 1 ? '#8b5cf6' : '#6366f1'}
+            color={i === 0 ? '#14B8A6' : i === 1 ? '#2563EB' : '#2563EB'}
+            emissive={i === 0 ? '#14B8A6' : i === 1 ? '#2563EB' : '#2563EB'}
             emissiveIntensity={0.8}
             transparent
             opacity={0.7 - i * 0.1}
@@ -77,7 +77,7 @@ const BlackHole = ({ mousePosition, scrollY }) => {
       <mesh>
         <sphereGeometry args={[5, 32, 32]} />
         <meshBasicMaterial
-          color="#a855f7"
+          color="#2563EB"
           transparent
           opacity={0.05}
           wireframe

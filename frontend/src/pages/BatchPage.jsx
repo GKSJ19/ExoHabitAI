@@ -214,13 +214,13 @@ const BatchPage = () => {
               transition={{ delay: 0.2, type: "spring" }}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm mb-6"
             >
-              <Database className="w-4 h-4 text-cyan-400" />
+              <Database className="w-4 h-4 text-teal" />
               <span className="text-sm text-white/70">Multi-Planet Analysis</span>
             </motion.div>
             
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-white via-cyan-200 to-purple-200 bg-clip-text text-transparent">
-                Batch Prediction
+              <span className="bg-gradient-to-r from-clean via-teal to-scientific bg-clip-text text-transparent">
+                Upload
               </span>
             </h1>
           <p className="text-xl text-white/60 max-w-3xl mx-auto">
@@ -239,7 +239,7 @@ const BatchPage = () => {
             onClick={() => setUploadMode('json')}
             className={`px-6 py-3 rounded-xl font-medium transition-all flex items-center gap-2 ${
               uploadMode === 'json'
-                ? 'bg-gradient-to-r from-purple-500/20 to-cyan-500/20 text-white border border-white/20'
+                ? 'bg-gradient-to-r from-scientific/20 to-teal/20 text-white border border-white/20'
                 : 'text-white/60 hover:text-white hover:bg-white/5'
             }`}
           >
@@ -249,7 +249,7 @@ const BatchPage = () => {
             onClick={() => setUploadMode('csv')}
             className={`px-6 py-3 rounded-xl font-medium transition-all flex items-center gap-2 ${
               uploadMode === 'csv'
-                ? 'bg-gradient-to-r from-purple-500/20 to-cyan-500/20 text-white border border-white/20'
+                ? 'bg-gradient-to-r from-scientific/20 to-teal/20 text-white border border-white/20'
                 : 'text-white/60 hover:text-white hover:bg-white/5'
             }`}
           >
@@ -331,8 +331,8 @@ const BatchPage = () => {
                     onDrop={handleDrop}
                     className={`border-2 border-dashed rounded-lg p-8 text-center transition-all ${
                       dragActive
-                        ? 'border-primary-500/80 bg-primary-500/10'
-                        : 'border-primary-500/30 hover:border-primary-500/60'
+                        ? 'border-scientific/80 bg-scientific/10'
+                        : 'border-scientific/30 hover:border-scientific/60'
                     }`}
                   >
                     <input
@@ -343,7 +343,7 @@ const BatchPage = () => {
                       id="csv-upload"
                     />
                     <label htmlFor="csv-upload" className="cursor-pointer block">
-                      <FileUp className={`w-10 h-10 mx-auto mb-3 ${dragActive ? 'text-primary-400' : 'text-primary-400/70'}`} />
+                      <FileUp className={`w-10 h-10 mx-auto mb-3 ${dragActive ? 'text-scientific' : 'text-scientific/70'}`} />
                       <p className="text-white font-medium">Drag & drop CSV or click to upload</p>
                       <p className="text-white/60 text-sm">CSV with 39 columns (headers on first row)</p>
                     </label>
@@ -353,7 +353,7 @@ const BatchPage = () => {
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
-                      className="bg-white/5 rounded-lg p-4 border border-primary-500/20"
+                      className="bg-white/5 rounded-lg p-4 border border-scientific/20"
                     >
                       <div className="flex items-center justify-between mb-4">
                         <h4 className="text-white font-bold flex items-center gap-2">
@@ -362,7 +362,7 @@ const BatchPage = () => {
                         </h4>
                         <button
                           onClick={() => setShowPreview(!showPreview)}
-                          className="text-primary-400 hover:text-primary-300 text-sm"
+                          className="text-scientific hover:text-scientific/80 text-sm"
                         >
                           {showPreview ? 'Hide' : 'Show'}
                         </button>
@@ -381,8 +381,8 @@ const BatchPage = () => {
                           </thead>
                           <tbody>
                             {previewData.map((planet, idx) => (
-                              <tr key={idx} className="border-t border-white/5 hover:bg-white/5 transition">
-                                <td className="p-2 truncate text-primary-400">{planet.pl_name || '—'}</td>
+                                <tr key={idx} className="border-t border-white/5 hover:bg-white/5 transition">
+                                <td className="p-2 truncate text-scientific">{planet.pl_name || '—'}</td>
                                 <td className="text-right p-2">{planet.pl_dens?.toFixed(2) || '—'}</td>
                                 <td className="text-right p-2">{planet.pl_bmasse?.toFixed(2) || '—'}</td>
                                 <td className="text-right p-2">{planet.pl_orbper?.toFixed(2) || '—'}</td>
@@ -414,8 +414,8 @@ const BatchPage = () => {
                     </motion.div>
                   )}
 
-                  <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 text-sm">
-                    <p className="text-blue-300 font-medium mb-2">📋 CSV Format Required:</p>
+                  <div className="bg-scientific/10 border border-scientific/30 rounded-lg p-4 text-sm">
+                    <p className="text-scientific font-medium mb-2">📋 CSV Format Required:</p>
                     <ul className="text-white/70 space-y-1">
                       <li>• Header row with 39 feature names</li>
                       <li>• Each row = one planet</li>
@@ -555,22 +555,22 @@ const BatchPage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="p-8 rounded-3xl bg-gradient-to-r from-purple-500/10 via-transparent to-cyan-500/10 border border-white/10 backdrop-blur-sm mt-12"
+          className="p-8 rounded-3xl bg-gradient-to-r from-scientific/10 via-transparent to-teal/10 border border-white/10 backdrop-blur-sm mt-12"
         >
           <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-            <Rocket className="w-5 h-5 text-purple-400" />
+            <Rocket className="w-5 h-5 text-scientific" />
             How It Works
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="p-6 rounded-2xl bg-white/5 border border-white/5">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-purple-500/20 to-pink-500/20 flex items-center justify-center mb-4">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-scientific/20 to-teal/20 flex items-center justify-center mb-4">
                 <span className="text-xl">1️⃣</span>
               </div>
               <p className="font-bold text-white mb-2">Upload Data</p>
               <p className="text-white/50 text-sm">Use CSV or JSON format with all 39 planetary & stellar features per planet</p>
             </div>
             <div className="p-6 rounded-2xl bg-white/5 border border-white/5">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-cyan-500/20 to-blue-500/20 flex items-center justify-center mb-4">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-teal/20 to-scientific/20 flex items-center justify-center mb-4">
                 <span className="text-xl">2️⃣</span>
               </div>
               <p className="font-bold text-white mb-2">Preview & Review</p>

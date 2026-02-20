@@ -241,7 +241,7 @@ const RankingPage = () => {
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <Globe className="w-5 h-5 text-cyan-400" />
+                            <Globe className="w-5 h-5 text-teal" />
                             <span className="text-white font-medium">
                               {planet.pl_name || `Exoplanet #${planet.rank}`}
                             </span>
@@ -279,7 +279,7 @@ const RankingPage = () => {
                             }}
                             whileHover={{ scale: 1.1, x: 5 }}
                             whileTap={{ scale: 0.95 }}
-                            className="p-2 rounded-lg bg-gradient-to-r from-purple-500/20 to-cyan-500/20 hover:from-purple-500/30 hover:to-cyan-500/30 border border-white/10 transition-all"
+                            className="p-2 rounded-lg bg-gradient-to-r from-scientific/20 to-teal/20 hover:from-scientific/30 hover:to-teal/30 border border-white/10 transition-all"
                           >
                             <ChevronRight className="w-5 h-5 text-white" />
                           </motion.button>
@@ -320,7 +320,7 @@ const RankingPage = () => {
               className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-gray-900 to-black rounded-3xl border border-white/20 shadow-2xl"
             >
               {/* Header */}
-              <div className="sticky top-0 z-10 p-6 bg-gradient-to-r from-purple-500/20 to-cyan-500/20 backdrop-blur-xl border-b border-white/10">
+              <div className="sticky top-0 z-10 p-6 bg-gradient-to-r from-scientific/20 to-teal/20 backdrop-blur-xl border-b border-white/10">
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="flex items-center gap-3 mb-2">
@@ -348,9 +348,9 @@ const RankingPage = () => {
               {/* Content */}
               <div className="p-6 space-y-6">
                 {/* Prediction Summary */}
-                <div className="p-6 rounded-2xl bg-gradient-to-r from-purple-500/10 to-cyan-500/10 border border-white/10">
+                <div className="p-6 rounded-2xl bg-gradient-to-r from-scientific/10 to-teal/10 border border-white/10">
                   <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Target className="w-6 h-6 text-purple-400" />
+                    <Target className="w-6 h-6 text-scientific" />
                     Prediction Summary
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -372,7 +372,7 @@ const RankingPage = () => {
                     </div>
                     <div className="p-4 rounded-xl bg-white/5">
                       <p className="text-sm text-white/60 mb-1">Model Threshold</p>
-                      <p className="text-2xl font-bold text-cyan-400">0.0763</p>
+                      <p className="text-2xl font-bold text-teal">0.0763</p>
                     </div>
                   </div>
                 </div>
@@ -380,7 +380,7 @@ const RankingPage = () => {
                 {/* Visual Score Bar */}
                 <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
                   <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <TrendingUp className="w-6 h-6 text-cyan-400" />
+                    <TrendingUp className="w-6 h-6 text-teal" />
                     Confidence Visualization
                   </h3>
                   <div className="space-y-4">

@@ -112,7 +112,7 @@ const HomePage = () => {
       
       {/* Floating orbs that follow cursor */}
       <motion.div
-        className="fixed w-96 h-96 rounded-full bg-purple-500/20 blur-3xl pointer-events-none z-0"
+        className="fixed w-96 h-96 rounded-full bg-scientific/20 blur-3xl pointer-events-none z-0"
         animate={{
           x: mousePosition.x * 100 + window.innerWidth / 2 - 192,
           y: mousePosition.y * 100 + window.innerHeight / 2 - 192,
@@ -120,7 +120,7 @@ const HomePage = () => {
         transition={{ type: "spring", stiffness: 50, damping: 20 }}
       />
       <motion.div
-        className="fixed w-96 h-96 rounded-full bg-cyan-500/20 blur-3xl pointer-events-none z-0"
+        className="fixed w-96 h-96 rounded-full bg-teal/20 blur-3xl pointer-events-none z-0"
         animate={{
           x: -mousePosition.x * 80 + window.innerWidth / 2 - 192,
           y: -mousePosition.y * 80 + window.innerHeight / 2 - 192,
@@ -136,13 +136,13 @@ const HomePage = () => {
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
-            className="inline-flex items-center gap-2 px-5 py-2.5 mb-10 rounded-full glass-card border border-purple-500/30 backdrop-blur-xl group hover:border-purple-400/50 transition-all duration-300"
+            className="inline-flex items-center gap-2 px-5 py-2.5 mb-10 rounded-full glass-card border border-scientific/30 backdrop-blur-xl group hover:border-scientific/50 transition-all duration-300"
           >
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
             >
-              <Sparkles className="w-4 h-4 text-purple-400" />
+              <Sparkles className="w-4 h-4 text-scientific" />
             </motion.div>
             <span className="text-sm text-white/90 font-medium">99% Accuracy with Hybrid Stacking</span>
             <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
@@ -190,7 +190,7 @@ const HomePage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2, duration: 0.8 }}
           >
-            Leveraging <span className="text-purple-400 font-semibold">83.33% recall</span> and <span className="text-cyan-400 font-semibold">cutting-edge ML</span> to identify 
+            Leveraging <span className="text-scientific font-semibold">83.33% recall</span> and <span className="text-teal font-semibold">cutting-edge ML</span> to identify 
             potentially habitable exoplanets across the cosmos
           </motion.p>
 
@@ -203,11 +203,11 @@ const HomePage = () => {
           >
             <Link to="/predict" className="hero-cta">
               <motion.button 
-                whileHover={{ scale: 1.05, boxShadow: '0 20px 60px rgba(139, 92, 246, 0.4)' }}
+                whileHover={{ scale: 1.05, boxShadow: '0 20px 60px rgba(37,99,235,0.4)' }}
                 whileTap={{ scale: 0.98 }}
-                className="relative group px-10 py-5 text-lg font-semibold rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 text-white overflow-hidden"
+                className="relative group px-10 py-5 text-lg font-semibold rounded-2xl bg-gradient-to-r from-scientific to-teal text-white overflow-hidden"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-r from-scientific to-teal opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="relative flex items-center gap-3">
                   <Rocket className="w-6 h-6" />
                   <span>Start Prediction</span>
@@ -245,8 +245,8 @@ const HomePage = () => {
               <span>99% Accuracy</span>
             </div>
             <div className="w-1 h-1 rounded-full bg-white/30" />
-            <div className="flex items-center gap-2">
-              <Cpu className="w-4 h-4 text-purple-400" />
+              <div className="flex items-center gap-2">
+              <Cpu className="w-4 h-4 text-scientific" />
               <span>39 Features</span>
             </div>
           </motion.div>
@@ -296,13 +296,13 @@ const HomePage = () => {
             className="relative group"
           >
             {/* Animated border gradient */}
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 rounded-[2rem] opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-700" />
+            <div className="absolute inset-0 bg-gradient-to-r from-scientific via-teal to-scientific rounded-[2rem] opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-700" />
             
             <div className="relative glass-card p-10 md:p-16 rounded-[2rem] border border-white/20 backdrop-blur-2xl overflow-hidden">
               {/* Animated mesh gradient background */}
               <div className="absolute inset-0 opacity-30">
-                <div className="absolute top-0 left-0 w-96 h-96 bg-purple-500/30 rounded-full blur-3xl animate-pulse" />
-                <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-500/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+                <div className="absolute top-0 left-0 w-96 h-96 bg-scientific/30 rounded-full blur-3xl animate-pulse" />
+                <div className="absolute bottom-0 right-0 w-96 h-96 bg-teal/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
               </div>
               
               <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-16">
@@ -326,7 +326,7 @@ const HomePage = () => {
                     className="text-center relative group/stat"
                   >
                     {/* Hover glow */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-purple-500/0 to-purple-500/0 group-hover/stat:from-purple-500/20 group-hover/stat:to-transparent rounded-2xl transition-all duration-300" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-scientific/0 to-scientific/0 group-hover/stat:from-scientific/20 group-hover/stat:to-transparent rounded-2xl transition-all duration-300" />
                     
                     <motion.div
                       initial={{ opacity: 0 }}
@@ -343,7 +343,7 @@ const HomePage = () => {
                     
                     {/* Decorative line */}
                     <motion.div
-                      className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent"
+                      className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-gradient-to-r from-transparent via-scientific to-transparent"
                       initial={{ scaleX: 0 }}
                       whileInView={{ scaleX: 1 }}
                       transition={{ delay: idx * 0.15 + 0.5, duration: 0.5 }}
@@ -440,10 +440,10 @@ const HomePage = () => {
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-white/60">Recall Rate</span>
-                    <span className="text-cyan-400 font-mono">83.33%</span>
+                    <span className="text-teal font-mono">83.33%</span>
                   </div>
                   <div className="w-full bg-white/10 rounded-full h-2">
-                    <div className="h-full w-[83.33%] bg-gradient-to-r from-cyan-500 to-blue-400 rounded-full" />
+                    <div className="h-full w-[83.33%] bg-gradient-to-r from-teal to-scientific rounded-full" />
                   </div>
                 </div>
               </div>
@@ -455,7 +455,7 @@ const HomePage = () => {
       {/* Features Section - Advanced 3D Card Grid */}
       <section ref={featuresRef} className="relative py-40 px-6 overflow-hidden">
         {/* Background accent */}
-        <div className="absolute inset-0 bg-gradient-to-b from-purple-900/10 via-transparent to-cyan-900/10 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-scientific/10 via-transparent to-teal/10 pointer-events-none" />
         
         <div className="max-w-7xl mx-auto relative z-10">
           <motion.div
@@ -468,7 +468,7 @@ const HomePage = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              className="inline-block px-4 py-1 rounded-full border border-white/20 text-white/60 text-sm mb-6"
+                className="inline-block px-4 py-1 rounded-full border border-white/20 text-white/60 text-sm mb-6"
             >
               [ Advanced Technology ]
             </motion.div>
@@ -506,27 +506,27 @@ const HomePage = () => {
                 }}
                 className="group relative"
               >
-                <div className="glass-card p-8 rounded-3xl border border-white/10 group-hover:border-purple-500/50 transition-all duration-500 relative overflow-hidden h-full flex flex-col">
+                <div className="glass-card p-8 rounded-3xl border border-white/10 group-hover:border-scientific/50 transition-all duration-500 relative overflow-hidden h-full flex flex-col">
                   {/* Hover glow effect */}
                   <motion.div
-                    className="absolute inset-0 bg-gradient-to-br from-purple-500/0 via-pink-500/0 to-cyan-500/0 group-hover:from-purple-500/10 group-hover:via-pink-500/10 group-hover:to-cyan-500/10 transition-all duration-500"
+                    className="absolute inset-0 bg-gradient-to-br from-scientific/0 via-teal/0 to-scientific/0 group-hover:from-scientific/10 group-hover:via-teal/10 group-hover:to-scientific/10 transition-all duration-500"
                     initial={false}
                   />
                   
                   {/* Animated corner accent */}
-                  <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-purple-500/20 to-transparent rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-scientific/20 to-transparent rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   
                   <div className="relative z-10">
                     {/* Icon container with 3D effect */}
                     <motion.div
                       whileHover={{ scale: 1.1, rotateZ: 5 }}
                       transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                      className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-cyan-500/20 flex items-center justify-center mb-6 text-purple-400 group-hover:text-pink-400 transition-colors duration-300 shadow-lg shadow-purple-500/20 group-hover:shadow-pink-500/30"
+                      className="w-16 h-16 rounded-2xl bg-gradient-to-br from-scientific/20 via-teal/20 to-scientific/20 flex items-center justify-center mb-6 text-scientific group-hover:text-teal transition-colors duration-300 shadow-lg shadow-scientific/20 group-hover:shadow-teal/30"
                     >
                       {feature.icon}
                     </motion.div>
                     
-                    <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-pink-400 transition-all duration-300">
+                    <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-scientific group-hover:to-teal transition-all duration-300">
                       {feature.title}
                     </h3>
                     
@@ -536,7 +536,7 @@ const HomePage = () => {
                   </div>
                   
                   {/* Bottom accent line */}
-                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-purple-500/50 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-scientific/50 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
                 </div>
               </motion.div>
             ))}
@@ -561,7 +561,7 @@ const HomePage = () => {
                 whileHover={{ scale: 1.05, y: -5 }}
                 className="glass-card p-6 rounded-2xl border border-white/10 text-center backdrop-blur-xl"
               >
-                <div className="text-purple-400 mb-3 flex justify-center">
+                <div className="text-scientific mb-3 flex justify-center">
                   {spec.icon}
                 </div>
                 <p className="text-2xl font-bold text-white mb-1">{spec.value}</p>
@@ -583,9 +583,9 @@ const HomePage = () => {
             className="relative group"
           >
             {/* Animated cosmic background */}
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-cyan-500/20 rounded-[2.5rem] blur-2xl group-hover:blur-3xl transition-all duration-700 animate-pulse" />
+            <div className="absolute inset-0 bg-gradient-to-r from-scientific/20 via-teal/20 to-scientific/20 rounded-[2.5rem] blur-2xl group-hover:blur-3xl transition-all duration-700 animate-pulse" />
             
-            <div className="relative glass-card p-12 md:p-20 rounded-[2.5rem] border border-purple-500/30 overflow-hidden">
+            <div className="relative glass-card p-12 md:p-20 rounded-[2.5rem] border border-scientific/30 overflow-hidden">
               {/* Floating particles effect */}
               <div className="absolute inset-0 overflow-hidden">
                 {[...Array(20)].map((_, i) => (
@@ -623,7 +623,7 @@ const HomePage = () => {
                   }}
                   className="inline-block mb-8"
                 >
-                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-2xl shadow-purple-500/50">
+                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-scientific to-teal flex items-center justify-center shadow-2xl shadow-scientific/50">
                     <Globe className="w-10 h-10 text-white" />
                   </div>
                 </motion.div>
@@ -634,8 +634,8 @@ const HomePage = () => {
                 </h2>
                 
                 <p className="text-xl md:text-2xl text-white/70 mb-10 max-w-2xl mx-auto leading-relaxed">
-                  Start analyzing exoplanet data with our <span className="text-purple-400 font-semibold">99% accurate</span> hybrid ML model. 
-                  Unlock insights that could lead to the next <span className="text-cyan-400 font-semibold">Earth-like discovery</span>.
+                  Start analyzing exoplanet data with our <span className="text-scientific font-semibold">99% accurate</span> hybrid ML model. 
+                  Unlock insights that could lead to the next <span className="text-teal font-semibold">Earth-like discovery</span>.
                 </p>
                 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
@@ -643,13 +643,13 @@ const HomePage = () => {
                     <motion.button
                       whileHover={{ 
                         scale: 1.08, 
-                        boxShadow: '0 20px 80px rgba(139, 92, 246, 0.5)',
+                        boxShadow: '0 20px 80px rgba(37, 99, 235, 0.5)',
                         y: -5
                       }}
                       whileTap={{ scale: 0.95 }}
-                      className="relative group/btn px-12 py-6 text-xl font-bold rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 text-white overflow-hidden shadow-2xl shadow-purple-500/50"
+                      className="relative group/btn px-12 py-6 text-xl font-bold rounded-2xl bg-gradient-to-r from-scientific to-teal text-white overflow-hidden shadow-2xl shadow-scientific/50"
                     >
-                      <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-scientific to-teal opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300" />
                       <div className="relative flex items-center gap-3">
                         <Rocket className="w-6 h-6" />
                         <span>Start Your Journey</span>

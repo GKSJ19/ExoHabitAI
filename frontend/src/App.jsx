@@ -7,6 +7,7 @@ import PredictPage from './pages/PredictPage'
 import BatchPage from './pages/BatchPage'
 import RankingPage from './pages/RankingPage'
 import AboutPage from './pages/AboutPage'
+import DashboardPage from './pages/DashboardPage'
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/predict" element={<PredictPage />} />
             <Route path="/batch" element={<BatchPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/ranking" element={<RankingPage />} />
             <Route path="/about" element={<AboutPage />} />
           </Routes>

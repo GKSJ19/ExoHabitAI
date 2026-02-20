@@ -8,46 +8,96 @@ This Flask application provides REST APIs for:
 3. System health monitoring
 """
 
+import sys
+import os
+
+# Add parent directory to path for imports to work when app is run directly or via wsgi
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib
 import pandas as pd
 import numpy as np
-import os
 from datetime import datetime
-from utils import validate_input_features, preprocess_input, get_feature_names
+
+# Try to import utilities - use relative import if in package context, else use direct import
+try:
+    from .utils import validate_input_features, preprocess_input, get_feature_names
+except (ImportError, ValueError):
+    from backend.utils import validate_input_features, preprocess_input, get_feature_names
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend integration
 
 # ========== MODEL INITIALIZATION ==========
-MODEL_PATH = os.path.join('..', 'models', 'exohabit_hybrid_stack.pkl')
-RANKING_PATH = os.path.join('..', 'data', 'processed', 'habitability_ranked_Milestone2.csv')
-METADATA_PATH = os.path.join('..', 'data', 'processed', 'final-preprocessed6.csv')
+# Get the base directory (ExoHabitAI root) relative to this backend script
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+MODELS_DIR = os.path.join(BASE_DIR, 'models')
+DATA_DIR = os.path.join(BASE_DIR, 'data', 'processed')
+
+MODEL_PATH = os.path.join(MODELS_DIR, 'exohabit_hybrid_stack.pkl')
+# If the configured model path does not exist, attempt to auto-detect any .pkl model
+if not os.path.exists(MODEL_PATH):
+    try:
+        # Prefer the named fallback if present
+        fallback = os.path.join(MODELS_DIR, 'xgboost.pkl')
+        if os.path.exists(fallback):
+            MODEL_PATH = fallback
+        else:
+            # Pick the first .pkl file found in the models directory
+            pkl_files = [f for f in os.listdir(MODELS_DIR) if f.endswith('.pkl')]
+            if pkl_files:
+                MODEL_PATH = os.path.join(MODELS_DIR, pkl_files[0])
+    except Exception:
+        pass
+RANKING_PATH = os.path.join(DATA_DIR, 'habitability_ranked_Milestone2.csv')
+METADATA_PATH = os.path.join(DATA_DIR, 'final-preprocessed6.csv')
 
 # Optimized threshold from MLDP4 notebook (83.33% Recall, 38.46% Precision, 99% Accuracy)
 OPTIMAL_THRESHOLD = 0.0763
 
+model = None
 try:
-    model = joblib.load(MODEL_PATH)
-    print(f"✓ ExoHabitAI Model Loaded Successfully from {MODEL_PATH}")
-    print(f"  Model Type: {type(model).__name__}")
-    print(f"  Detection Threshold: {OPTIMAL_THRESHOLD}")
+    if os.path.exists(MODEL_PATH):
+        model = joblib.load(MODEL_PATH)
+        print(f"[OK] ExoHabitAI Model Loaded Successfully from {MODEL_PATH}")
+        print(f"  Model Type: {type(model).__name__}")
+        print(f"  Detection Threshold: {OPTIMAL_THRESHOLD}")
+    else:
+        print(f"[WARNING] No model file found. Searched path: {MODEL_PATH}")
+        model = None
 except Exception as e:
-    print(f"✗ Error loading model: {e}")
+    print(f"[ERROR] Error loading model: {e}")
     model = None
+
+# Capture model's internal feature names if available for validation
+MODEL_FEATURE_NAMES = None
+try:
+    if model is not None:
+        # XGBoost sklearn wrapper exposes booster feature names
+        if hasattr(model, 'get_booster'):
+            booster = model.get_booster()
+            MODEL_FEATURE_NAMES = getattr(booster, 'feature_names', None)
+        # sklearn-style models may expose feature names in feature_names_in_
+        if not MODEL_FEATURE_NAMES and hasattr(model, 'feature_names_in_'):
+            MODEL_FEATURE_NAMES = list(getattr(model, 'feature_names_in_'))
+        if MODEL_FEATURE_NAMES is not None:
+            print(f"  Model expected features: {MODEL_FEATURE_NAMES}")
+except Exception as _:
+    MODEL_FEATURE_NAMES = None
 
 # Load metadata for planet details
 metadata_df = None
 try:
     if os.path.exists(METADATA_PATH):
         metadata_df = pd.read_csv(METADATA_PATH)
-        print(f"✓ Planet Metadata Loaded: {len(metadata_df)} planets")
+        print(f"[OK] Planet Metadata Loaded: {len(metadata_df)} planets")
         print(f"  Metadata columns: {metadata_df.columns.tolist()}")
     else:
-        print(f"⚠ Metadata file not found at {METADATA_PATH}")
+        print(f"[WARNING] Metadata file not found at {METADATA_PATH}")
 except Exception as e:
-    print(f"✗ Error loading metadata: {e}")
+    print(f"[ERROR] Error loading metadata: {e}")
 
 # ========== ENDPOINT 1: HEALTH CHECK ==========
 @app.route('/status', methods=['GET'])
@@ -120,6 +170,91 @@ def predict_habitability():
         
         # Preprocess input data
         input_df = preprocess_input(data, expected_features)
+
+        # If the loaded model expects a different set of features, attempt a best-effort mapping
+        if MODEL_FEATURE_NAMES is not None:
+            input_cols = list(input_df.columns)
+            # Quick mismatch detection: different lengths or different names
+            if len(MODEL_FEATURE_NAMES) != len(input_cols) or set(MODEL_FEATURE_NAMES) != set(input_cols):
+                # Build a conservative mapping from API feature names to model feature names where possible
+                # This is heuristic: prefer direct name matches, then a small set of known crosswalks.
+                source_data = {col: float(input_df.iloc[0][col]) for col in input_df.columns}
+
+                crosswalk = {
+                    "planet_radius_earth": "pl_rade",
+                    "planet_mass_earth": "pl_bmasse",
+                    "orbital_period_days": "pl_orbper",
+                    "semi_major_axis_AU": "pl_orbsmax",
+                    "equilibrium_temp_K": "pl_eqt",
+                    "planet_density": "pl_dens",
+                    "star_temp_K": "st_teff",
+                    "star_luminosity": "st_lum",
+                    "star_metallicity": "st_met",
+                    # spectral class flags may not exist in the API payload; leave as fallback
+                    "star_F": "star_F",
+                    "star_G": "star_G",
+                    "star_K": "star_K",
+                    "star_M": "star_M",
+                }
+
+                mapped_values = []
+                mapping_used = {}
+                for mf in MODEL_FEATURE_NAMES:
+                    # direct match
+                    if mf in source_data:
+                        val = source_data[mf]
+                        mapping_used[mf] = mf
+                    # crosswalk match
+                    elif mf in crosswalk and crosswalk[mf] in source_data:
+                        val = source_data[crosswalk[mf]]
+                        mapping_used[mf] = crosswalk[mf]
+                    # try to find by substring in provided names
+                    else:
+                        found = None
+                        for cand in source_data.keys():
+                            if mf.lower() in cand.lower() or cand.lower() in mf.lower():
+                                found = cand
+                                break
+                        if found:
+                            val = source_data[found]
+                            mapping_used[mf] = found
+                        else:
+                            val = 0.0
+                            mapping_used[mf] = None
+
+                    try:
+                        mapped_values.append(float(val))
+                    except Exception:
+                        mapped_values.append(0.0)
+
+                # Create DataFrame matching the model's expected column names
+                mapped_df = pd.DataFrame([mapped_values], columns=MODEL_FEATURE_NAMES)
+
+                # Use the mapped dataframe for prediction, but include mapping info in the response if needed
+                try:
+                    probability = model.predict_proba(mapped_df)[:, 1][0]
+                    prediction = 1 if probability >= OPTIMAL_THRESHOLD else 0
+
+                    response = {
+                        "status": "success",
+                        "prediction_result": "Habitable" if prediction == 1 else "Non-Habitable",
+                        "confidence_score": float(np.round(probability, 4)),
+                        "threshold_used": OPTIMAL_THRESHOLD,
+                        "planet_id": data.get('pl_name', data.get('planet_id', 'Unknown')),
+                        "warning": "Input features did not match model expectations; a best-effort mapping was applied.",
+                        "mapping_used": mapping_used
+                    }
+
+                    return jsonify(response), 200
+                except Exception as e:
+                    return jsonify({
+                        "status": "error",
+                        "message": "Model feature mismatch: loaded model was trained with a different set of features, and automatic mapping failed.",
+                        "model_features": MODEL_FEATURE_NAMES,
+                        "provided_features": input_cols,
+                        "error_details": str(e),
+                        "details": "Automatic mapping was attempted but prediction failed. Consider retraining or providing the exact feature names expected by the model."
+                    }), 500
         
         # Generate prediction
         probability = model.predict_proba(input_df)[:, 1][0]
@@ -503,4 +638,4 @@ if __name__ == '__main__':
     print(f"Detection Threshold: {OPTIMAL_THRESHOLD}")
     print(f"Planets with Metadata: {len(metadata_df) if metadata_df is not None else 0}")
     print("=" * 60)
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=False, host='0.0.0.0', port=5000)

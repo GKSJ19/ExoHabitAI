@@ -70,7 +70,7 @@ const BlackHole = ({ scrollY = 0 }) => {
       <mesh ref={eventHorizonRef} position={[0, 0, -5]} scale={1.3}>
         <sphereGeometry args={[1.8, 64, 64]} />
         <meshBasicMaterial
-          color="#1a0033"
+          color="#0F172A"
           transparent
           opacity={0.4}
           side={THREE.BackSide}
@@ -78,11 +78,11 @@ const BlackHole = ({ scrollY = 0 }) => {
         />
       </mesh>
       
-      {/* Inner glow - subtle purple */}
+      {/* Inner glow - scientific blue */}
       <mesh ref={innerGlowRef} position={[0, 0, -5]} scale={1.5}>
         <sphereGeometry args={[1.8, 32, 32]} />
         <meshBasicMaterial
-          color="#6b21a8"
+          color="#2563EB"
           transparent
           opacity={0.3}
           side={THREE.BackSide}
@@ -92,24 +92,24 @@ const BlackHole = ({ scrollY = 0 }) => {
       
       {/* Accretion Disk */}
       <group ref={accretionDiskRef} position={[0, 0, -5]} rotation={[Math.PI / 2.5, 0, 0]}>
-        {/* Inner disk - bright cyan */}
+        {/* Inner disk - teal accent */}
         <mesh>
           <torusGeometry args={[3, 0.3, 2, 100]} />
           <meshStandardMaterial
-            color="#06b6d4"
-            emissive="#06b6d4"
+            color="#14B8A6"
+            emissive="#14B8A6"
             emissiveIntensity={0.5}
             transparent
             opacity={0.6}
             side={THREE.DoubleSide}
           />
         </mesh>
-        {/* Middle disk - purple */}
+        {/* Middle disk - scientific blue */}
         <mesh>
           <torusGeometry args={[3.8, 0.25, 2, 100]} />
           <meshStandardMaterial
-            color="#8b5cf6"
-            emissive="#8b5cf6"
+            color="#2563EB"
+            emissive="#2563EB"
             emissiveIntensity={0.4}
             transparent
             opacity={0.4}
@@ -120,8 +120,8 @@ const BlackHole = ({ scrollY = 0 }) => {
         <mesh>
           <torusGeometry args={[4.5, 0.15, 2, 100]} />
           <meshStandardMaterial
-            color="#a78bfa"
-            emissive="#a78bfa"
+            color="#2563EB"
+            emissive="#2563EB"
             emissiveIntensity={0.2}
             transparent
             opacity={0.2}
@@ -225,7 +225,7 @@ const ExoHabitLogo = ({ position = [0, 0, 0], scale = 1 }) => {
         <mesh ref={cubeRef} position={[0.9, 0.3, 0.3]} scale={0.18}>
           <boxGeometry args={[1, 1, 1]} />
           <meshPhysicalMaterial
-            color="#f472b6"
+            color="#2563EB"
             metalness={1}
             roughness={0}
             envMapIntensity={2}
@@ -233,10 +233,10 @@ const ExoHabitLogo = ({ position = [0, 0, 0], scale = 1 }) => {
         </mesh>
         
         {/* Orbiting sphere */}
-        <mesh ref={sphereRef} position={[-0.7, -0.6, 0.3]}>
+          <mesh ref={sphereRef} position={[-0.7, -0.6, 0.3]}>
           <sphereGeometry args={[0.1, 32, 32]} />
           <meshPhysicalMaterial
-            color="#34d399"
+            color="#14B8A6"
             metalness={1}
             roughness={0}
             envMapIntensity={2}
@@ -261,11 +261,14 @@ const ParticleField = ({ count = 800 }) => {
     
     const colorChoice = Math.random()
     if (colorChoice < 0.4) {
-      colors[i * 3] = 0.4; colors[i * 3 + 1] = 0.2; colors[i * 3 + 2] = 0.6 // Dark Purple
+      // scientific blue
+      colors[i * 3] = 0.145; colors[i * 3 + 1] = 0.388; colors[i * 3 + 2] = 0.922
     } else if (colorChoice < 0.7) {
-      colors[i * 3] = 0.1; colors[i * 3 + 1] = 0.5; colors[i * 3 + 2] = 0.7 // Dark Cyan
+      // teal accent
+      colors[i * 3] = 0.078; colors[i * 3 + 1] = 0.722; colors[i * 3 + 2] = 0.651
     } else {
-      colors[i * 3] = 0.5; colors[i * 3 + 1] = 0.3; colors[i * 3 + 2] = 0.7 // Violet
+      // softer scientific tint
+      colors[i * 3] = 0.5; colors[i * 3 + 1] = 0.3; colors[i * 3 + 2] = 0.8
     }
   }
 
@@ -312,17 +315,17 @@ const HeroSceneContent = ({ scrollY = 0, mousePosition = { x: 0, y: 0 } }) => {
     <>
       <CameraController scrollY={scrollY} mousePosition={mousePosition} />
       <ambientLight intensity={0.15} />
-      <pointLight position={[10, 10, 10]} intensity={0.5} color="#4c1d95" />
-      <pointLight position={[-10, 5, -10]} intensity={0.8} color="#6b21a8" />
-      <pointLight position={[0, -5, 5]} intensity={0.4} color="#06b6d4" />
-      <pointLight position={[0, 0, 10]} intensity={0.3} color="#1e1b4b" />
+      <pointLight position={[10, 10, 10]} intensity={0.5} color="#2563EB" />
+      <pointLight position={[-10, 5, -10]} intensity={0.8} color="#2563EB" />
+      <pointLight position={[0, -5, 5]} intensity={0.4} color="#14B8A6" />
+      <pointLight position={[0, 0, 10]} intensity={0.3} color="#0F172A" />
       <spotLight
         position={[0, 15, 0]}
         angle={0.4}
         penumbra={1}
         intensity={0.8}
         castShadow
-        color="#8b5cf6"
+        color="#2563EB"
       />
       
       <Environment preset="night" />
