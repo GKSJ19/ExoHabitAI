@@ -4,6 +4,7 @@ from flask_cors import CORS
 import joblib
 import numpy as np
 import pandas as pd
+import os
 
 
 from utils import validate_input, format_prediction
@@ -278,5 +279,7 @@ def download_predicted():
 # ===============================
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
+
 
