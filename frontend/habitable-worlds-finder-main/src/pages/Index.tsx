@@ -3,6 +3,7 @@ import HabitabilityMeter from "@/components/HabitabilityMeter";
 import PlanetaryForm, { PlanetaryParams } from "@/components/PlanetaryForm";
 import StellarForm, { StellarParams } from "@/components/StellarForm";
 import ResultsDisplay, { PredictionResult } from "@/components/ResultsDisplay";
+import PlanetRanking, { RankedPlanet } from "@/components/PlanetRanking";
 import { computeHabitabilityScore, predictFromAPI } from "@/lib/habitability";
 import { Button } from "@/components/ui/button";
 import spaceHero from "@/assets/space-hero.jpg";
@@ -69,6 +70,8 @@ const Index = () => {
   const [pErrors, setPErrors] = useState<Partial<Record<keyof PlanetaryParams, string>>>({});
   const [sErrors, setSErrors] = useState<Partial<Record<keyof StellarParams, string>>>({});
   const [activePreset, setActivePreset] = useState<PresetKey | null>("earth");
+  const [rankings, setRankings] = useState<RankedPlanet[]>([]);
+  const [predictionCount, setPredictionCount] = useState(0);
 
   // Live score updates as sliders move
   useEffect(() => {
@@ -100,6 +103,15 @@ const Index = () => {
     try {
       const r = await predictFromAPI(planet, stellar);
       setResult(r);
+      const count = predictionCount + 1;
+      setPredictionCount(count);
+      const name = activePreset
+        ? presetLabels[activePreset].label
+        : `Planet #${count}`;
+      setRankings((prev) => [
+        ...prev,
+        { id: `${Date.now()}`, name, result: r, timestamp: Date.now() },
+      ]);
     } catch (err) {
       setApiError("An unexpected error occurred. Please try again.");
     } finally {
@@ -263,6 +275,12 @@ const Index = () => {
             </div>
             <div className="h-px bg-gradient-to-r from-space-green/40 to-transparent mb-6" />
             <ResultsDisplay result={result} planetParams={planet} stellarParams={stellar} />
+          </div>
+        )}
+
+        {rankings.length > 0 && (
+          <div className="mt-8 glass-card rounded-2xl p-6">
+            <PlanetRanking rankings={rankings} onClear={() => setRankings([])} />
           </div>
         )}
       </main>
