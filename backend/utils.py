@@ -3,8 +3,11 @@ import os
 import pandas as pd
 import numpy as np
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 MODEL_PATH = os.path.join(
-    os.path.dirname(__file__),
+    BASE_DIR,
+    "..",
     "models",
     "Exohabit_habitibility_model.pkl"
 )
