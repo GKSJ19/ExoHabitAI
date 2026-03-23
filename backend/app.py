@@ -155,6 +155,7 @@ def importance():
         importance = abs(clf.coef_[0]).tolist()
 
         return jsonify({
+    
             "features": FEATURE_NAMES,
             "importance": importance
         })
