@@ -1,0 +1,55 @@
+Data Description
+
+The dataset used in this project is sourced from the NASA Exoplanet Archive, a publicly available and continuously updated repository that provides confirmed exoplanet data collected from space- and ground-based observation missions such as Kepler, TESS, and K2. The archive compiles scientifically validated measurements of exoplanets and their host stars, making it a reliable source for astrophysical research and machine learning applications.
+this dataset is made up of 39508 rows and 289 columns.
+The dataset is provided in CSV format and follows a structured tabular layout. Each row represents an individual confirmed exoplanet, while each column corresponds to a specific planetary, orbital, or stellar parameter.
+Dataset Features
+Planetary Features
+
+Planet Radius (pl_rade) – Radius of the planet measured in Earth radii
+
+Planet Mass (pl_bmasse) – Mass of the planet measured in Earth masses
+
+Orbital Period (pl_orbper) – Time taken by the planet to complete one orbit
+
+Semi-Major Axis (pl_orbsmax) – Average distance between the planet and its host star
+
+Equilibrium Temperature (pl_eqt) – Estimated temperature of the planet assuming energy balance
+
+Insolation Flux (pl_insol) – Amount of stellar energy received by the planet
+
+Stellar (Host Star) Features
+
+Stellar Effective Temperature (st_teff) – Surface temperature of the host star
+
+Stellar Radius (st_rad) – Radius of the host star
+
+Stellar Mass (st_mass) – Mass of the host star
+
+Stellar Luminosity (st_lum) – Total energy output of the host star
+
+Target Variable
+
+The dataset does not include a direct habitability label. Therefore, a binary habitability feature is derived using astrophysical thresholds based on planetary equilibrium temperature, radius, and stellar insolation flux.
+
+1 – Potentially habitable
+
+0 – Non-habitable
+
+Data Characteristics
+
+Contains missing values due to observational constraints
+
+Predominantly numerical features
+
+Imbalanced class distribution with fewer potentially habitable planets
+
+Requires preprocessing such as imputation, normalization, and feature selection
+
+Dataset Relevance
+
+This dataset provides essential planetary and stellar attributes required to model exoplanet environments. Its scientific reliability and comprehensive feature set make it suitable for building machine learning models to predict the potential habitability of exoplanets.
+
+One-Line Summary
+
+A structured dataset from the NASA Exoplanet Archive containing planetary and stellar parameters used for machine learning-based prediction of exoplanet habitability.
