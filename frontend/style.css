@@ -1,0 +1,100 @@
+#bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+.container, .card, .header {
+    position: relative;
+    z-index: 1;
+}
+
+body {
+    background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+}
+
+.header {
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(5px);
+}
+
+.card {
+    border-radius: 15px;
+    border: none;
+}
+
+.btn-predict {
+    background: linear-gradient(45deg, #00c6ff, #0072ff);
+    border: none;
+    color: white;
+    font-weight: 500;
+    padding: 12px;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.btn-predict:hover {
+    transform: scale(1.03);
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
+}
+
+#resultBox .success-card {
+    background: #e8fff1;
+    border-left: 6px solid #28a745;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+#resultBox .error-card {
+    background: #ffe8e8;
+    border-left: 6px solid #dc3545;
+    padding: 15px;
+    border-radius: 10px;
+}
+#loadingBox {
+    background: #f4f8ff;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.success-card {
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+.error-card {
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(10px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+#bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+body {
+    background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+}
+
+.card {
+    position: relative;
+    z-index: 2;
+}
+
+.navbar {
+    position: relative;
+    z-index: 2;
+}
+.container {
+    position: relative;
+    z-index: 2;
+}
