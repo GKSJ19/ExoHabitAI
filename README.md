@@ -3,7 +3,7 @@ Deployed on: Vercel (Frontend) | Render (Backend)
 Tech Stack: Python 3.8+ | React 18
 
 
-🔗 Live Demo: https://exohabitai.vercel.app
+🔗 Live Demo: https://exohabit-ai-sigma.vercel.app
 🔗 API Base URL: https://exohabitai-backend.onrender.com
 
 
@@ -164,7 +164,7 @@ cd frontendnpm installecho "VITE_API_URL=http://localhost:5000" > .envnpm run de
 🌍 Live Deployment
 
 
-Frontend: https://exohabitai.vercel.app
+Frontend: https://exohabit-ai-sigma.vercel.app
 
 
 Backend: https://exohabitai-backend.onrender.com
