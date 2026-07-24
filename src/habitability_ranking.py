@@ -12,7 +12,11 @@ print("🔍 Loading dataset...")
 df = pd.read_csv(DATA_PATH)
 print("📊 Dataset shape:", df.shape)
 
-X = df.drop(columns="habitable")
+FEATURES = [
+    "pl_rade", "pl_bmasse", "pl_orbper", "pl_eqt",
+    "pl_dens", "st_teff", "st_rad", "st_mass", "st_lum"
+]
+X = df[FEATURES]
 
 print("🤖 Loading trained model...")
 model = joblib.load(MODEL_PATH)

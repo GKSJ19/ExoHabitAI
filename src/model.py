@@ -22,7 +22,12 @@ print(" Dataset loaded:", df.shape)
 
 TARGET = "habitable"
 
-X = df.drop(columns=TARGET)
+FEATURES = [
+    "pl_rade", "pl_bmasse", "pl_orbper", "pl_eqt",
+    "pl_dens", "st_teff", "st_rad", "st_mass", "st_lum"
+]
+
+X = df[FEATURES]
 y = df[TARGET]
 
 print("\n Class distribution before balancing:")
